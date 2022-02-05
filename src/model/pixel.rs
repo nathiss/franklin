@@ -1,4 +1,4 @@
-#[derive(Debug, Clone, PartialEq)]
+#[derive(Debug, Clone, PartialEq, Default)]
 pub struct Pixel {
     r: u8,
     g: u8,
@@ -26,11 +26,5 @@ impl Pixel {
         self.r(grayscale);
         self.g(grayscale);
         self.b(grayscale);
-    }
-}
-
-impl Default for Pixel {
-    fn default() -> Self {
-        Pixel { r: 0, g: 0, b: 0 }
     }
 }
