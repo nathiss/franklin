@@ -2,7 +2,8 @@ use franklin::Image;
 
 fn main() {
     let image = Image::load("C:\\Users\\kamil\\Downloads\\Lenna.png").unwrap();
-    println!("Dimentions: h: {}, w: {}", image.height(), image.width())
+    println!("Dimensions: h: {}, w: {}", image.height(), image.width());
+    println!("Pixels #: {}", image.pixels().len());
 
     // let mut environment_builder = EnvironmentBuilder::default();
     // environment_builder.set_image(image);
