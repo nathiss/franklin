@@ -1,4 +1,5 @@
 mod image;
-pub use self::image::Image;
+pub(crate) use self::image::Image;
 
 mod pixel;
+pub(crate) use self::pixel::Pixel;

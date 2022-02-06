@@ -1,7 +1,7 @@
-use franklin::Image;
+use franklin::ImageReader;
 
 fn main() {
-    let image = Image::load("C:\\Users\\kamil\\Downloads\\Lenna.png").unwrap();
+    let image = ImageReader::load("C:\\Users\\kamil\\Downloads\\Lenna.png").unwrap();
     println!("Dimensions: h: {}, w: {}", image.height(), image.width());
     println!("Pixels #: {}", image.pixels().len());
 

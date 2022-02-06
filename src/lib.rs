@@ -1,2 +1,4 @@
 mod model;
-pub use model::Image;
+
+mod image_reader;
+pub use image_reader::ImageReader;

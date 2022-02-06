@@ -1,6 +1,3 @@
-use anyhow::{Ok, Result};
-use image::{io::Reader as ImageReader, Pixel as RgbPixel};
-
 use super::pixel::Pixel;
 
 pub struct Image {
@@ -10,28 +7,12 @@ pub struct Image {
 }
 
 impl Image {
-    pub fn load(path: &str) -> Result<Self> {
-        let image = ImageReader::open(path)?;
-        let image = image.decode()?;
-
-        let image_buffer = match image.as_rgb8() {
-            Some(image_buffer) => Ok(image_buffer),
-            None => Err(anyhow::Error::msg(
-                "Cannot convert the image to RGB8 representation.",
-            )),
-        }?;
-
-        let pixels = image_buffer
-            .pixels()
-            .map(|p| p.channels())
-            .map(|p| Pixel::new(p[0], p[1], p[2]))
-            .collect::<Vec<Pixel>>();
-
-        Ok(Self {
-            height: image.height(),
-            width: image.width(),
+    pub fn new(height: u32, width: u32, pixels: Vec<Pixel>) -> Self {
+        Self {
+            height,
+            width,
             pixels,
-        })
+        }
     }
 
     pub fn width(&self) -> u32 {
