@@ -27,4 +27,8 @@ impl Pixel {
         self.g(grayscale);
         self.b(grayscale);
     }
+
+    pub fn as_slice(&self) -> [u8; 3] {
+        [self.r, self.g, self.b]
+    }
 }

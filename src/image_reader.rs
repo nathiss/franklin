@@ -1,7 +1,7 @@
 use anyhow::{Ok, Result};
 use image::{io::Reader, Pixel as RgbPixel};
 
-use crate::model::{Image, Pixel};
+use crate::models::{Image, Pixel};
 
 pub struct ImageReader;
 

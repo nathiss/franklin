@@ -1,4 +1,4 @@
-use super::pixel::Pixel;
+use crate::models::pixel::Pixel;
 
 pub struct Image {
     height: u32,
@@ -25,5 +25,16 @@ impl Image {
 
     pub fn pixels(&self) -> &Vec<Pixel> {
         &self.pixels
+    }
+
+    pub fn as_raw_bytes(&self) -> Vec<u8> {
+        self.pixels.iter().fold(
+            Vec::with_capacity(self.pixels().len() * 3),
+            |mut vec, pixel| {
+                vec.extend_from_slice(&pixel.as_slice());
+
+                vec
+            },
+        )
     }
 }
