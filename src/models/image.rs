@@ -1,13 +1,15 @@
+use std::ops::{Index, IndexMut};
+
 use crate::models::pixel::Pixel;
 
 pub struct Image {
-    height: u32,
-    width: u32,
+    height: usize,
+    width: usize,
     pixels: Vec<Pixel>,
 }
 
 impl Image {
-    pub fn new(height: u32, width: u32, pixels: Vec<Pixel>) -> Self {
+    pub fn new(height: usize, width: usize, pixels: Vec<Pixel>) -> Self {
         Self {
             height,
             width,
@@ -15,11 +17,26 @@ impl Image {
         }
     }
 
-    pub fn width(&self) -> u32 {
+    pub fn blank(height: usize, width: usize, pixel: &Pixel) -> Self {
+        let size = height * width;
+        let mut pixels = Vec::with_capacity(size as usize);
+
+        for _ in 0..size {
+            pixels.push(pixel.clone());
+        }
+
+        Self {
+            height,
+            width,
+            pixels,
+        }
+    }
+
+    pub fn width(&self) -> usize {
         self.width
     }
 
-    pub fn height(&self) -> u32 {
+    pub fn height(&self) -> usize {
         self.height
     }
 
@@ -36,5 +53,19 @@ impl Image {
                 vec
             },
         )
+    }
+}
+
+impl Index<usize> for Image {
+    type Output = Pixel;
+
+    fn index(&self, index: usize) -> &Self::Output {
+        &self.pixels[index]
+    }
+}
+
+impl IndexMut<usize> for Image {
+    fn index_mut(&mut self, index: usize) -> &mut Self::Output {
+        &mut self.pixels[index]
     }
 }

@@ -14,5 +14,5 @@ mod models;
 
 pub mod mutators;
 
-mod image_reader;
-pub use image_reader::ImageReader;
+mod fs;
+pub use fs::*;

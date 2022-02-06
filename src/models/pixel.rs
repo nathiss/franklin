@@ -6,7 +6,15 @@ pub struct Pixel {
 }
 
 impl Pixel {
-    pub fn new(r: u8, g: u8, b: u8) -> Self {
+    pub const fn white() -> Self {
+        Pixel::new(255, 255, 255)
+    }
+
+    pub const fn grayscale(grayscale: u8) -> Self {
+        Pixel::new(grayscale, grayscale, grayscale)
+    }
+
+    pub const fn new(r: u8, g: u8, b: u8) -> Self {
         Pixel { r, g, b }
     }
 

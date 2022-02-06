@@ -15,3 +15,4 @@ members = ["example"]
 image = "0.24.0"
 anyhow = "1.0.53"
 show-image = "0.10.1"
+rand = "0.8.4"
