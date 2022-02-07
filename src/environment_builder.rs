@@ -1,7 +1,7 @@
 use anyhow::Result;
 
 use crate::{
-    crossover::{CrossoverFunction, RandomCrossover},
+    crossover::{CrossoverFunction, EqualHalfsCrossover},
     environment::Environment,
     fitness::{FitnessFunction, SquareDistance},
     models::Image,
@@ -87,7 +87,7 @@ impl Default for EnvironmentBuilder {
             image: None,
             mutator: Box::new(RectangleMutator::default()),
             fitness: Box::new(SquareDistance::default()),
-            crossover: Box::new(RandomCrossover::default()),
+            crossover: Box::new(EqualHalfsCrossover::default()),
             generation_size: 100,
             display_condition: DisplayCondition::None,
             output_directory: String::new(),

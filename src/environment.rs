@@ -1,4 +1,5 @@
 use anyhow::Result;
+use rand::prelude::SliceRandom;
 
 use crate::{
     crossover::CrossoverFunction,
@@ -6,6 +7,7 @@ use crate::{
     fitness::FitnessFunction,
     models::{Image, Pixel},
     mutators::Mutator,
+    util::Random,
     DisplayCondition, SaveCondition,
 };
 
@@ -21,6 +23,8 @@ pub struct Environment {
 
     generation: Vec<(Image, usize)>,
     current_generation_number: u32,
+
+    random: Random,
 }
 
 impl Environment {
@@ -45,6 +49,7 @@ impl Environment {
             save_condition,
             generation: Vec::with_capacity(generation_size),
             current_generation_number: 0,
+            random: Random::default(),
         }
     }
 
@@ -59,10 +64,11 @@ impl Environment {
         }
     }
 
-    fn run_single_generation(&mut self) {
+    fn run_single_generation(&mut self) -> Result<()> {
         self.generation
             .iter_mut()
-            .skip(1) // We skip the first element to make sure we always make progress or stay with the same image
+            // We skip the first element to make sure we always make progress or stay with the same image
+            .skip(1)
             .for_each(|mut entry| {
                 // Mutate
                 self.mutator.mutate(&mut entry.0);
@@ -71,25 +77,39 @@ impl Environment {
                 entry.1 = self.fitness.calculate_fitness(&self.image, &entry.0);
             });
 
+        // Sort
         self.generation.sort_by(|a, b| a.1.cmp(&b.1));
 
-        // Dump worst, save best
-        self.generation.truncate(2);
-        for i in 2..self.generation_size {
-            let entry = self.generation[i % 2].clone();
-            self.generation.push(entry);
-        }
+        // Dump worst
+        let best_size = self.get_best_size();
+        self.generation.truncate(best_size);
+        // for i in best_size..self.generation_size {
+        //     let entry = self.generation[i % 2].clone();
+        //     self.generation.push(entry);
+        // }
 
         // Crossover
+        for _ in 0..self.generation_size - best_size {
+            let parents = self
+                .generation
+                .choose_multiple(self.random.get_rng(), 2)
+                .map(|entry| &entry.0)
+                .collect::<Vec<&Image>>();
+
+            let new_image = self.crossover.crossover(parents[0], parents[1]);
+            self.generation.push((new_image, usize::MAX));
+        }
 
         self.current_generation_number += 1;
         println!(
             "Current generation: {} ({})",
             self.current_generation_number, self.generation[0].1
         );
+
+        Ok(())
     }
 
-    pub fn run(mut self) {
+    pub fn run(mut self) -> Result<()> {
         self.prepare_first_generation();
 
         match &self.display_condition {
@@ -98,11 +118,11 @@ impl Environment {
         }
     }
 
-    fn run_with_window(mut self) {
+    fn run_with_window(mut self) -> Result<()> {
         let dimensions = (self.image.height(), self.image.width());
         Window::run_with_context(dimensions, move |mut window| -> Result<()> {
             while !window.should_exit() {
-                self.run_single_generation();
+                self.run_single_generation()?;
 
                 let should_display_window = match self.display_condition {
                     DisplayCondition::All => true,
@@ -117,11 +137,23 @@ impl Environment {
 
             Ok(())
         });
+
+        Ok(())
     }
 
-    fn run_without_window(mut self) {
+    fn run_without_window(mut self) -> Result<()> {
         loop {
-            self.run_single_generation();
+            self.run_single_generation()?;
+        }
+    }
+
+    fn get_best_size(&self) -> usize {
+        let size = self.generation_size / 50;
+
+        if size == 0 {
+            1
+        } else {
+            size
         }
     }
 }

@@ -18,6 +18,17 @@ impl Image {
         }
     }
 
+    pub fn from_iter<'a, I>(height: usize, width: usize, iter: I) -> Self
+    where
+        I: Iterator<Item = &'a Pixel>,
+    {
+        let size = height * width;
+        let pixels = iter.take(size).cloned().collect::<Vec<Pixel>>();
+        assert_eq!(size, pixels.len(), "Iterator yielded not enough pixels.");
+
+        Self::new(height, width, pixels)
+    }
+
     pub fn blank(height: usize, width: usize, pixel: &Pixel) -> Self {
         let size = height * width;
         let mut pixels = Vec::with_capacity(size as usize);

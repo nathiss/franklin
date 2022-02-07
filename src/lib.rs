@@ -14,5 +14,7 @@ mod models;
 
 pub mod mutators;
 
+mod util;
+
 mod fs;
 pub use fs::*;
