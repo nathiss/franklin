@@ -83,10 +83,6 @@ impl Environment {
         // Dump worst
         let best_size = self.get_best_size();
         self.generation.truncate(best_size);
-        // for i in best_size..self.generation_size {
-        //     let entry = self.generation[i % 2].clone();
-        //     self.generation.push(entry);
-        // }
 
         // Crossover
         for _ in 0..self.generation_size - best_size {

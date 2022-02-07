@@ -1,4 +1,4 @@
-use crate::models::Image;
+use crate::models::{Image, Pixel};
 
 use super::CrossoverFunction;
 
@@ -6,14 +6,19 @@ use super::CrossoverFunction;
 pub struct EqualHalfsCrossover;
 
 impl CrossoverFunction for EqualHalfsCrossover {
-    fn crossover(&self, first_image: &Image, second_image: &Image) -> Image {
+    fn crossover(&mut self, first_image: &Image, second_image: &Image) -> Image {
         let size = first_image.pixels().len();
-        let iter = first_image
+        let mut pixels = first_image
             .pixels()
             .iter()
             .take(size / 2 + 1)
-            .chain(second_image.pixels().iter().take(size / 2));
+            .chain(second_image.pixels().iter().take(size / 2))
+            .cloned()
+            .collect::<Vec<Pixel>>();
 
-        Image::from_iter(first_image.height(), first_image.width(), iter)
+        // TODO: should not be nesesery
+        pixels.truncate(size);
+
+        Image::new(first_image.height(), first_image.width(), pixels)
     }
 }
