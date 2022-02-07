@@ -1,9 +1,7 @@
 use anyhow::Result;
 
 use franklin::{
-    crossover::LeftOrRightCloneCrossover,
-    fitness::SquareDistance,
-    mutators::RectangleMutator,
+    crossover::LeftOrRightCloneCrossover, fitness::SquareDistance, mutators::RectangleMutator,
     DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
