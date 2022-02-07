@@ -92,15 +92,36 @@ impl Environment {
     pub fn run(mut self) {
         self.prepare_first_generation();
 
+        match &self.display_condition {
+            DisplayCondition::All | DisplayCondition::Every(_) => self.run_with_window(),
+            DisplayCondition::None => self.run_without_window(),
+        }
+    }
+
+    fn run_with_window(mut self) {
         let dimensions = (self.image.height(), self.image.width());
         Window::run_with_context(dimensions, move |mut window| -> Result<()> {
             while !window.should_exit() {
                 self.run_single_generation();
 
-                window.show_image("Lorem ipsum", &self.generation[0].0)?;
+                let should_display_window = match self.display_condition {
+                    DisplayCondition::All => true,
+                    DisplayCondition::Every(per) => self.current_generation_number % per == 0,
+                    DisplayCondition::None => false,
+                };
+
+                if should_display_window {
+                    window.show_image("Lorem ipsum", &self.generation[0].0)?;
+                }
             }
 
             Ok(())
         });
+    }
+
+    fn run_without_window(mut self) {
+        loop {
+            self.run_single_generation();
+        }
     }
 }

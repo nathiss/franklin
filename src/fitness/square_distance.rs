@@ -9,7 +9,11 @@ impl FitnessFunction for SquareDistance {
         first_image: &crate::models::Image,
         second_image: &crate::models::Image,
     ) -> usize {
-        assert_eq!(first_image.pixels().len(), second_image.pixels().len(), "Images must be of the same size.");
+        assert_eq!(
+            first_image.pixels().len(),
+            second_image.pixels().len(),
+            "Images must be of the same size."
+        );
 
         first_image
             .pixels()
