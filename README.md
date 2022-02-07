@@ -1,6 +1,9 @@
 # franklin
 
-A utility for generating images via generic algorithm.
+A utility for generating images through evolution.
+
+> What is art?  
+> Something more than sum of its parts.
 
 ## License
 
