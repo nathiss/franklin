@@ -30,6 +30,18 @@ impl Pixel {
         self.b = b;
     }
 
+    pub fn get_r(&self) -> u8 {
+        self.r
+    }
+
+    pub fn get_g(&self) -> u8 {
+        self.g
+    }
+
+    pub fn get_b(&self) -> u8 {
+        self.b
+    }
+
     pub fn set_grayscale(&mut self, grayscale: u8) {
         self.r(grayscale);
         self.g(grayscale);

@@ -8,8 +8,13 @@ license-file = "LICENSE.txt"
 keywords = ["generic-algorithm", "evolution", "image-generation"]
 publish = false
 
-[workspace]
-members = ["example"]
+[lib]
+name = "franklin"
+path = "src/lib.rs"
+
+[[bin]]
+name = "franklin-cli"
+path = "src/bin.rs"
 
 [dependencies]
 image = "0.24.0"

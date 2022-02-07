@@ -19,7 +19,7 @@ pub struct Environment {
     output_directory: String,
     save_condition: SaveCondition,
 
-    generation: Vec<Image>,
+    generation: Vec<(Image, usize)>,
     current_generation_number: u32,
 }
 
@@ -54,24 +54,39 @@ impl Environment {
         let pixel = Pixel::white();
 
         for _ in 0..self.generation_size {
-            self.generation.push(Image::blank(height, width, &pixel));
+            self.generation
+                .push((Image::blank(height, width, &pixel), usize::MAX));
         }
     }
 
     fn run_single_generation(&mut self) {
-        // Mutate
         self.generation
             .iter_mut()
-            .for_each(|mut specimen| self.mutator.mutate(&mut specimen));
+            .skip(1) // We skip the first element to make sure we always make progress or stay with the same image
+            .for_each(|mut entry| {
+                // Mutate
+                self.mutator.mutate(&mut entry.0);
 
-        // Calculate fitness
+                // Calculate fitness
+                entry.1 = self.fitness.calculate_fitness(&self.image, &entry.0);
+            });
+
+        self.generation.sort_by(|a, b| a.1.cmp(&b.1));
+
+        // Dump worst, save best
+        self.generation.truncate(2);
+        for i in 2..self.generation_size {
+            let entry = self.generation[i % 2].clone();
+            self.generation.push(entry);
+        }
 
         // Crossover
 
-        // Dump worst, save best
-
         self.current_generation_number += 1;
-        println!("Current generation: {}", self.current_generation_number);
+        println!(
+            "Current generation: {} ({})",
+            self.current_generation_number, self.generation[0].1
+        );
     }
 
     pub fn run(mut self) {
@@ -82,7 +97,7 @@ impl Environment {
             while !window.should_exit() {
                 self.run_single_generation();
 
-                window.show_image("Lorem ipsum", &self.generation[0])?;
+                window.show_image("Lorem ipsum", &self.generation[0].0)?;
             }
 
             Ok(())

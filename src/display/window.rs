@@ -72,7 +72,8 @@ impl Window {
                 }
                 Err(TryRecvError::Disconnected) => {
                     println!("Disconnected");
-                    self.should_exit = true
+                    self.should_exit = true;
+                    break;
                 }
                 Err(TryRecvError::Empty) => break,
             }
