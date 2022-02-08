@@ -1,5 +1,7 @@
 # franklin
 
+[![franklin-ci](https://github.com/nathiss/franklin/actions/workflows/franklin-ci.yml/badge.svg?branch=development)](https://github.com/nathiss/franklin/actions/workflows/franklin-ci.yml)
+
 A utility for generating images through evolution.
 
 > What is art?  
