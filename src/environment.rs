@@ -92,6 +92,7 @@ impl Environment {
                 .map(|entry| &entry.0)
                 .collect::<Vec<&Image>>();
 
+            // TODO: this panics if generation_size < 100
             let new_image = self.crossover.crossover(parents[0], parents[1]);
             self.generation.push((new_image, usize::MAX));
         }
