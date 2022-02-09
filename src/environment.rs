@@ -8,7 +8,7 @@ use crate::{
     models::{Image, Pixel},
     mutators::Mutator,
     util::Random,
-    DisplayCondition, SaveCondition,
+    DisplayCondition, ImageWriter,
 };
 
 pub struct Environment {
@@ -18,13 +18,13 @@ pub struct Environment {
     fitness: Box<dyn FitnessFunction + Send>,
     crossover: Box<dyn CrossoverFunction + Send>,
     display_condition: DisplayCondition,
-    output_directory: String,
-    save_condition: SaveCondition,
+    should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
 
     generation: Vec<(Image, usize)>,
     current_generation_number: u32,
 
     random: Random,
+    image_writer: ImageWriter,
 }
 
 impl Environment {
@@ -35,8 +35,8 @@ impl Environment {
         fitness: Box<dyn FitnessFunction + Send>,
         crossover: Box<dyn CrossoverFunction + Send>,
         display_condition: DisplayCondition,
-        output_directory: String,
-        save_condition: SaveCondition,
+        output_directory: &str,
+        should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
     ) -> Self {
         Self {
             image,
@@ -45,11 +45,11 @@ impl Environment {
             fitness,
             crossover,
             display_condition,
-            output_directory,
-            save_condition,
+            should_save_specimen,
             generation: Vec::with_capacity(generation_size),
             current_generation_number: 0,
             random: Random::default(),
+            image_writer: ImageWriter::to_dir(output_directory),
         }
     }
 
@@ -92,7 +92,7 @@ impl Environment {
                 .map(|entry| &entry.0)
                 .collect::<Vec<&Image>>();
 
-            // TODO: this panics if generation_size < 100
+            // FIXME: this panics if generation_size < 100
             let new_image = self.crossover.crossover(parents[0], parents[1]);
             self.generation.push((new_image, usize::MAX));
         }
@@ -128,7 +128,12 @@ impl Environment {
                 };
 
                 if should_display_window {
+                    // TODO: change this title
                     window.show_image("Lorem ipsum", &self.generation[0].0)?;
+                }
+
+                if (self.should_save_specimen)(self.current_generation_number) {
+                    self.save_best_specimen()?;
                 }
             }
 
@@ -141,7 +146,19 @@ impl Environment {
     fn run_without_window(mut self) -> Result<()> {
         loop {
             self.run_single_generation()?;
+
+            if (self.should_save_specimen)(self.current_generation_number) {
+                self.save_best_specimen()?;
+            }
         }
+    }
+
+    fn save_best_specimen(&self) -> Result<()> {
+        let filename = format!("output_{:0>6}.png", self.current_generation_number);
+
+        self.image_writer.write(&filename, &self.generation[0].0)?;
+
+        Ok(())
     }
 
     fn get_best_size(&self) -> usize {
