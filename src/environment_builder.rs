@@ -1,3 +1,5 @@
+use std::{fs, path::Path};
+
 use anyhow::Result;
 
 use crate::{
@@ -45,17 +47,26 @@ impl EnvironmentBuilder {
         self.display_condition = display_condition;
     }
 
-    pub fn set_output_directory(&mut self, output_directory: &str, save_condition: SaveCondition) {
+    pub fn set_output_directory(
+        &mut self,
+        output_directory: &str,
+        save_condition: SaveCondition,
+    ) -> Result<()> {
         match save_condition {
-            SaveCondition::Never => self.save_condition = save_condition,
-            SaveCondition::Each(0) => panic!("SaveCondition::Each must be greater than zero."),
+            SaveCondition::Never => Ok(self.save_condition = save_condition),
+            SaveCondition::Each(0) => Err(anyhow::Error::msg(
+                "SaveCondition::Each must be greater than zero.",
+            )),
             SaveCondition::All | SaveCondition::Each(_) => {
-                match std::fs::read_dir(output_directory) {
-                    Ok(_) => {
-                        self.output_directory = output_directory.to_string();
-                        self.save_condition = save_condition;
-                    }
-                    Err(e) => panic!("Error while accessing dir: {}", e),
+                let abs_path = fs::canonicalize(Path::new(output_directory))?;
+                let attr = fs::metadata(abs_path)?;
+
+                if attr.is_dir() {
+                    self.output_directory = output_directory.to_string();
+                    self.save_condition = save_condition;
+                    Ok(())
+                } else {
+                    Err(anyhow::Error::msg("The path does not point to a directory"))
                 }
             }
         }
@@ -67,16 +78,27 @@ impl EnvironmentBuilder {
             Self {
                 generation_size: 0, ..
             } => Err(anyhow::Error::msg("Generation size cannot be zero")),
-            _ => Ok(Environment::new(
-                self.image.unwrap(),
-                self.generation_size,
-                self.mutator,
-                self.fitness,
-                self.crossover,
-                self.display_condition,
-                self.output_directory,
-                self.save_condition,
-            )),
+            _ => {
+                let should_save_specimen: Box<dyn Fn(u32) -> bool + Send> =
+                    match self.save_condition {
+                        SaveCondition::All => Box::new(|_| true),
+                        SaveCondition::Each(per) => {
+                            Box::new(move |gen_number: u32| gen_number % per == 0)
+                        }
+                        SaveCondition::Never => Box::new(|_| false),
+                    };
+
+                Ok(Environment::new(
+                    self.image.unwrap(),
+                    self.generation_size,
+                    self.mutator,
+                    self.fitness,
+                    self.crossover,
+                    self.display_condition,
+                    &self.output_directory,
+                    should_save_specimen,
+                ))
+            }
         }
     }
 }

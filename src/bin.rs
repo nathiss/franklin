@@ -15,8 +15,8 @@ fn main() -> Result<()> {
     environment_builder.set_mutator(Box::new(RectangleMutator::default()));
     environment_builder.set_fitness_function(Box::new(SquareDistance::default()));
     environment_builder.set_crossover_function(Box::new(LeftOrRightCloneCrossover::default()));
-    environment_builder.set_display_condition(DisplayCondition::All);
-    environment_builder.set_output_directory("", SaveCondition::Never);
+    environment_builder.set_display_condition(DisplayCondition::None);
+    environment_builder.set_output_directory("C:\\Temp\\images", SaveCondition::Each(50))?;
     environment_builder.set_generation_size(100);
 
     let environment = environment_builder.build()?;
