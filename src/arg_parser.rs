@@ -14,9 +14,9 @@ const DISPLAY_EVERY_INFO: &str =
     "Displays best specimen once per N generations. This option conflicts with display-all. Only one of them can be \
     used at the same time.";
 
-const OUTPUT_DIRECTORY_INFO: &str = "Path to the output directory in which generated images will be saved. Given path \
-must exist and point to a directory. The argument has no effect if neither save-all, nor save-every have been given \
-too.";
+const OUTPUT_DIRECTORY_INFO: &str =
+    "Path to the output directory in which generated images will be saved. Given path must exist and point to a \
+    directory. The argument has no effect if neither save-all, nor save-every have been given too.";
 
 const SAVE_ALL_INFO: &str =
     "Saves best specimen from every generation. This option conflicts with save-every. Only one of them can be used at \
