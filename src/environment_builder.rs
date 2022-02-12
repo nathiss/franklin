@@ -53,7 +53,10 @@ impl EnvironmentBuilder {
         save_condition: SaveCondition,
     ) -> Result<()> {
         match save_condition {
-            SaveCondition::Never => Ok(self.save_condition = save_condition),
+            SaveCondition::Never => {
+                self.save_condition = save_condition;
+                Ok(())
+            }
             SaveCondition::Each(0) => Err(anyhow::Error::msg(
                 "SaveCondition::Each must be greater than zero.",
             )),
