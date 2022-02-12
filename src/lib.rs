@@ -1,3 +1,6 @@
+mod arg_parser;
+pub use arg_parser::ArgParser;
+
 mod display;
 pub use display::DisplayCondition;
 
