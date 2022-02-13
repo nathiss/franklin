@@ -46,9 +46,10 @@ impl Mutator for RectangleMutator {
 
         for i in rect.x..(rect.width + rect.x) {
             for j in rect.y..(rect.height + rect.y) {
-                image[j * image_width + i].r(r);
-                image[j * image_width + i].g(g);
-                image[j * image_width + i].b(b);
+                let pixel = &mut image[j * image_width + i];
+                pixel.r(r);
+                pixel.g(g);
+                pixel.b(b);
             }
         }
     }
