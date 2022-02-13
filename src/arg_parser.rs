@@ -88,7 +88,7 @@ fn get_app() -> App<'static> {
                 .long("mutator")
                 .help("Mutator used to mutate specimens")
                 .takes_value(true)
-                .possible_values(["Rectangle"])
+                .possible_values(["Rectangle", "Triangle"])
                 .default_value("Rectangle")
                 .display_order(30),
         )
@@ -318,12 +318,12 @@ mod test {
             "--image",
             "PATH",
             "-m",
-            "Rectangle",
+            "Triangle",
         ]);
 
         assert!(result.is_ok());
         let result = result.unwrap();
-        assert_eq!("Rectangle", result.value_of("mutator").unwrap_or_default());
+        assert_eq!("Triangle", result.value_of("mutator").unwrap_or_default());
     }
 
     #[test]

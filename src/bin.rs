@@ -3,7 +3,7 @@ use anyhow::{Error, Result};
 use franklin::{
     crossover::{CrossoverFunction, EqualHalfsCrossover, LeftOrRightCloneCrossover},
     fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
-    mutators::{Mutator, RectangleMutator},
+    mutators::{Mutator, RectangleMutator, TriangleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
@@ -18,6 +18,7 @@ fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
 fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + 'static>> {
     match name {
         "Rectangle" => Ok(Box::new(RectangleMutator::default())),
+        "Triangle" => Ok(Box::new(TriangleMutator::default())),
         _ => Err(Error::msg("Unknown mutator.")),
     }
 }
