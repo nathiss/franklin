@@ -8,11 +8,12 @@ use crate::{
     models::{Image, Pixel},
     mutators::Mutator,
     util::Random,
-    DisplayCondition, ImageWriter,
+    ColorMode, DisplayCondition, ImageWriter,
 };
 
 pub struct Environment {
     image: Image,
+    color_mode: ColorMode,
     generation_size: usize,
     mutator: Box<dyn Mutator + Send>,
     fitness: Box<dyn FitnessFunction + Send>,
@@ -30,6 +31,7 @@ pub struct Environment {
 impl Environment {
     pub fn new(
         image: Image,
+        color_mode: ColorMode,
         generation_size: usize,
         mutator: Box<dyn Mutator + Send>,
         fitness: Box<dyn FitnessFunction + Send>,
@@ -40,6 +42,7 @@ impl Environment {
     ) -> Self {
         Self {
             image,
+            color_mode,
             generation_size,
             mutator,
             fitness,
@@ -70,11 +73,19 @@ impl Environment {
             // We skip the first element to make sure we always make progress or stay with the same image
             .skip(1)
             .for_each(|mut entry| {
-                // Mutate
-                self.mutator.mutate(&mut entry.0);
-
-                // Calculate fitness
-                entry.1 = self.fitness.calculate_fitness(&self.image, &entry.0);
+                // Mutate & calculate fitness
+                match self.color_mode {
+                    ColorMode::Rgb => {
+                        self.mutator.mutate_rgb(&mut entry.0);
+                        entry.1 = self.fitness.calculate_fitness_rgb(&self.image, &entry.0);
+                    }
+                    ColorMode::Grayscale => {
+                        self.mutator.mutate_grayscale(&mut entry.0);
+                        entry.1 = self
+                            .fitness
+                            .calculate_fitness_grayscale(&self.image, &entry.0);
+                    }
+                }
             });
 
         // Sort

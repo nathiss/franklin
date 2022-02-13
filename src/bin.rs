@@ -4,8 +4,16 @@ use franklin::{
     crossover::{CrossoverFunction, EqualHalfsCrossover, LeftOrRightCloneCrossover},
     fitness::{FitnessFunction, SquareDistance},
     mutators::{Mutator, RectangleMutator},
-    ArgParser, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
+    ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
+
+fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
+    match name {
+        "Rgb" => Ok(ColorMode::Rgb),
+        "Grayscale" => Ok(ColorMode::Grayscale),
+        _ => Err(Error::msg("Unknown mode.")),
+    }
+}
 
 fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + 'static>> {
     match name {
@@ -37,6 +45,11 @@ fn main() -> Result<()> {
 
     let mut environment_builder = EnvironmentBuilder::default();
     environment_builder.set_image(image);
+
+    // Safety: it's safe to unwrap because this argument has a default value, i.e. it cannot be empty or None.
+    environment_builder.set_color_mode(get_color_mode_from_name(
+        args.get_value("color_mode").unwrap(),
+    )?);
 
     // Safety: it's safe to unwrap because this argument has a default value, i.e. it cannot be empty or None.
     environment_builder.set_mutator(get_mutator_from_name(args.get_value("mutator").unwrap())?);

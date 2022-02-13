@@ -1,6 +1,9 @@
 mod arg_parser;
 pub use arg_parser::ArgParser;
 
+mod color_mode;
+pub use color_mode::ColorMode;
+
 mod display;
 pub use display::DisplayCondition;
 
