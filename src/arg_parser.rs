@@ -248,6 +248,46 @@ mod test {
     }
 
     #[test]
+    fn mode_modeIsNotSpecified_defaultValueSet() {
+        let result = get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH"]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!("Rgb", result.value_of("color_mode").unwrap_or_default());
+    }
+
+    #[test]
+    fn mode_modeIsSpecified_validationPassed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--mode",
+            "Grayscale",
+        ]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(
+            "Grayscale",
+            result.value_of("color_mode").unwrap_or_default()
+        );
+    }
+
+    #[test]
+    fn mode_valueDoesNotExistInPossibleValues_validationFailed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--mode",
+            "FOO",
+        ]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
     fn mutator_mutatorIsNotSpecified_defaultValueSet() {
         let result = get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH"]);
 
