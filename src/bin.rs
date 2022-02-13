@@ -2,7 +2,7 @@ use anyhow::{Error, Result};
 
 use franklin::{
     crossover::{CrossoverFunction, EqualHalfsCrossover, LeftOrRightCloneCrossover},
-    fitness::{FitnessFunction, SquareDistance},
+    fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
     mutators::{Mutator, RectangleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
@@ -25,6 +25,7 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + 'static>
 fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + 'static>> {
     match name {
         "SquareDistance" => Ok(Box::new(SquareDistance::default())),
+        "AbsoluteDistance" => Ok(Box::new(AbsoluteDistance::default())),
         _ => Err(Error::msg("Unknown fitness function.")),
     }
 }
