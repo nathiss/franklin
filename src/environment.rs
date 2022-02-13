@@ -11,6 +11,17 @@ use crate::{
     ColorMode, DisplayCondition, ImageWriter,
 };
 
+fn get_best_size(generation_size: usize) -> usize {
+    // This should always be true. arg_parser::validate_generation_size ensures valid generation size.
+    assert!(generation_size > 2, "Generation size must be grater than 2.");
+
+    if generation_size >= 100 {
+        generation_size / 100
+    } else {
+        2
+    }
+}
+
 pub struct Environment {
     image: Image,
     color_mode: ColorMode,
@@ -22,6 +33,7 @@ pub struct Environment {
     should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
 
     generation: Vec<(Image, usize)>,
+    best_from_generation_size: usize,
     current_generation_number: u32,
 
     random: Random,
@@ -50,6 +62,7 @@ impl Environment {
             display_condition,
             should_save_specimen,
             generation: Vec::with_capacity(generation_size),
+            best_from_generation_size: get_best_size(generation_size),
             current_generation_number: 0,
             random: Random::default(),
             image_writer: ImageWriter::to_dir(output_directory),
@@ -92,18 +105,16 @@ impl Environment {
         self.generation.sort_by(|a, b| a.1.cmp(&b.1));
 
         // Dump worst
-        let best_size = self.get_best_size();
-        self.generation.truncate(best_size);
+        self.generation.truncate(self.best_from_generation_size);
 
         // Crossover
-        for _ in 0..self.generation_size - best_size {
+        for _ in 0..self.generation_size - self.best_from_generation_size {
             let parents = self
                 .generation
                 .choose_multiple(self.random.get_rng(), 2)
                 .map(|entry| &entry.0)
                 .collect::<Vec<&Image>>();
 
-            // FIXME: this panics if generation_size < 100
             let new_image = self.crossover.crossover(parents[0], parents[1]);
             self.generation.push((new_image, usize::MAX));
         }
@@ -170,15 +181,5 @@ impl Environment {
         self.image_writer.write(&filename, &self.generation[0].0)?;
 
         Ok(())
-    }
-
-    fn get_best_size(&self) -> usize {
-        let size = self.generation_size / 50;
-
-        if size == 0 {
-            1
-        } else {
-            size
-        }
     }
 }
