@@ -6,6 +6,11 @@ use clap::{
     crate_authors, crate_description, crate_name, crate_version, App, Arg, ArgMatches, ValueHint,
 };
 
+const MODE_INFO: &str =
+    "Color mode by which specimens will be mutated. \"rgb\" indicates that each color channel should be mutated \
+    separately. \"grayscale\" indicates that all color channels should be mutated together, resulting in a grayscale \
+    image.";
+
 const DISPLAY_ALL_INFO: &str =
     "Displays best specimen from every generation. This option conflicts with display-every. Only one of them can be \
     used at the same time.";
@@ -69,6 +74,15 @@ fn get_app() -> App<'static> {
                 .display_order(10),
         )
         .arg(
+            Arg::new("color_mode")
+                .long("mode")
+                .long_help(MODE_INFO)
+                .takes_value(true)
+                .possible_values(["Rgb", "Grayscale"])
+                .default_value("Rgb")
+                .display_order(20),
+        )
+        .arg(
             Arg::new("mutator")
                 .short('m')
                 .long("mutator")
@@ -76,7 +90,7 @@ fn get_app() -> App<'static> {
                 .takes_value(true)
                 .possible_values(["Rectangle"])
                 .default_value("Rectangle")
-                .display_order(20),
+                .display_order(30),
         )
         .arg(
             Arg::new("fitness")
@@ -86,7 +100,7 @@ fn get_app() -> App<'static> {
                 .takes_value(true)
                 .possible_values(["SquareDistance"])
                 .default_value("SquareDistance")
-                .display_order(30),
+                .display_order(40),
         )
         .arg(
             Arg::new("crossover")
@@ -96,7 +110,7 @@ fn get_app() -> App<'static> {
                 .takes_value(true)
                 .possible_values(["LeftOrRight", "EqualHalfs"])
                 .default_value("LeftOrRight")
-                .display_order(40),
+                .display_order(50),
         )
         .arg(
             Arg::new("generation_size")
@@ -108,7 +122,7 @@ fn get_app() -> App<'static> {
                 .forbid_empty_values(true)
                 .value_name("N")
                 .validator(validate_generation_size)
-                .display_order(50),
+                .display_order(60),
         )
         .arg(
             Arg::new("display_all")
@@ -116,7 +130,7 @@ fn get_app() -> App<'static> {
                 .long_help(DISPLAY_ALL_INFO)
                 .takes_value(false)
                 .group("display")
-                .display_order(60),
+                .display_order(70),
         )
         .arg(
             Arg::new("display_every")
@@ -127,7 +141,7 @@ fn get_app() -> App<'static> {
                 .value_name("N")
                 .group("display")
                 .validator(validate_every)
-                .display_order(70),
+                .display_order(80),
         )
         .arg(
             Arg::new("output_directory")
@@ -137,7 +151,7 @@ fn get_app() -> App<'static> {
                 .forbid_empty_values(true)
                 .value_name("DIR")
                 .value_hint(ValueHint::DirPath)
-                .display_order(80),
+                .display_order(90),
         )
         .arg(
             Arg::new("save_all")
@@ -145,7 +159,7 @@ fn get_app() -> App<'static> {
                 .long_help(SAVE_ALL_INFO)
                 .takes_value(false)
                 .group("output")
-                .display_order(90),
+                .display_order(100),
         )
         .arg(
             Arg::new("save_every")
@@ -156,7 +170,7 @@ fn get_app() -> App<'static> {
                 .value_name("N")
                 .group("output")
                 .validator(validate_every)
-                .display_order(100),
+                .display_order(110),
         )
 }
 

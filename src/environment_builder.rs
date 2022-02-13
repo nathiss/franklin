@@ -1,6 +1,6 @@
 use std::{fs, path::Path};
 
-use anyhow::Result;
+use anyhow::{Error, Result};
 
 use crate::{
     crossover::{CrossoverFunction, EqualHalfsCrossover},
@@ -8,11 +8,12 @@ use crate::{
     fitness::{FitnessFunction, SquareDistance},
     models::Image,
     mutators::{Mutator, RectangleMutator},
-    DisplayCondition, SaveCondition,
+    ColorMode, DisplayCondition, SaveCondition,
 };
 
 pub struct EnvironmentBuilder {
     image: Option<Image>,
+    color_mode: ColorMode,
     mutator: Box<dyn Mutator + Send>,
     fitness: Box<dyn FitnessFunction + Send>,
     crossover: Box<dyn CrossoverFunction + Send>,
@@ -25,6 +26,10 @@ pub struct EnvironmentBuilder {
 impl EnvironmentBuilder {
     pub fn set_image(&mut self, image: Image) {
         self.image = Some(image);
+    }
+
+    pub fn set_color_mode(&mut self, color_mode: ColorMode) {
+        self.color_mode = color_mode;
     }
 
     pub fn set_mutator(&mut self, mutator: Box<dyn Mutator + Send>) {
@@ -57,9 +62,9 @@ impl EnvironmentBuilder {
                 self.save_condition = save_condition;
                 Ok(())
             }
-            SaveCondition::Each(0) => Err(anyhow::Error::msg(
-                "SaveCondition::Each must be greater than zero.",
-            )),
+            SaveCondition::Each(0) => {
+                Err(Error::msg("SaveCondition::Each must be greater than zero."))
+            }
             SaveCondition::All | SaveCondition::Each(_) => {
                 let abs_path = fs::canonicalize(Path::new(output_directory))?;
                 let attr = fs::metadata(abs_path)?;
@@ -69,7 +74,7 @@ impl EnvironmentBuilder {
                     self.save_condition = save_condition;
                     Ok(())
                 } else {
-                    Err(anyhow::Error::msg("The path does not point to a directory"))
+                    Err(Error::msg("The path does not point to a directory"))
                 }
             }
         }
@@ -77,10 +82,10 @@ impl EnvironmentBuilder {
 
     pub fn build(self) -> Result<Environment> {
         match self {
-            Self { image: None, .. } => Err(anyhow::Error::msg("Image must be set.")),
+            Self { image: None, .. } => Err(Error::msg("Image must be set.")),
             Self {
                 generation_size: 0, ..
-            } => Err(anyhow::Error::msg("Generation size cannot be zero")),
+            } => Err(Error::msg("Generation size cannot be zero")),
             _ => {
                 let should_save_specimen: Box<dyn Fn(u32) -> bool + Send> =
                     match self.save_condition {
@@ -93,6 +98,7 @@ impl EnvironmentBuilder {
 
                 Ok(Environment::new(
                     self.image.unwrap(),
+                    self.color_mode,
                     self.generation_size,
                     self.mutator,
                     self.fitness,
@@ -110,6 +116,7 @@ impl Default for EnvironmentBuilder {
     fn default() -> Self {
         Self {
             image: None,
+            color_mode: ColorMode::Rgb,
             mutator: Box::new(RectangleMutator::default()),
             fitness: Box::new(SquareDistance::default()),
             crossover: Box::new(EqualHalfsCrossover::default()),
