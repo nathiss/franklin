@@ -3,9 +3,9 @@ use crate::models::Pixel;
 use super::{fitness_function::fold_images, FitnessFunction};
 
 #[derive(Default)]
-pub struct SquareDistance;
+pub struct AbsoluteDistance;
 
-impl FitnessFunction for SquareDistance {
+impl FitnessFunction for AbsoluteDistance {
     fn calculate_fitness_rgb(
         &self,
         first_image: &crate::models::Image,
@@ -16,9 +16,9 @@ impl FitnessFunction for SquareDistance {
             let diff_g = isize::from(p1.get_g()) - isize::from(p2.get_g());
             let diff_b = isize::from(p1.get_b()) - isize::from(p2.get_b());
 
-            sum += diff_r.pow(2) as usize;
-            sum += diff_g.pow(2) as usize;
-            sum += diff_b.pow(2) as usize;
+            sum += diff_r.abs() as usize;
+            sum += diff_g.abs() as usize;
+            sum += diff_b.abs() as usize;
 
             sum
         };
@@ -35,7 +35,7 @@ impl FitnessFunction for SquareDistance {
             let diff_red = isize::from(p1.get_r()) - isize::from(p2.get_r());
             let diff_grayscale = diff_red * 3;
 
-            sum += diff_grayscale.pow(2) as usize;
+            sum += diff_grayscale.abs() as usize;
 
             sum
         };

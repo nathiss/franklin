@@ -98,7 +98,7 @@ fn get_app() -> App<'static> {
                 .long("fitness")
                 .help("Fitness function used to calculate fitness of specimens")
                 .takes_value(true)
-                .possible_values(["SquareDistance"])
+                .possible_values(["SquareDistance", "AbsoluteDistance"])
                 .default_value("SquareDistance")
                 .display_order(40),
         )
@@ -353,13 +353,13 @@ mod test {
             "--image",
             "PATH",
             "--fitness",
-            "SquareDistance",
+            "AbsoluteDistance",
         ]);
 
         assert!(result.is_ok());
         let result = result.unwrap();
         assert_eq!(
-            "SquareDistance",
+            "AbsoluteDistance",
             result.value_of("fitness").unwrap_or_default()
         );
     }
