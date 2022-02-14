@@ -2,7 +2,7 @@ use std::ops::{Index, IndexMut};
 
 use crate::models::pixel::Pixel;
 
-#[derive(Clone)]
+#[derive(Debug, Clone)]
 pub struct Image {
     height: usize,
     width: usize,
