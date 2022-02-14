@@ -9,21 +9,19 @@ struct RandomRectangle {
     height: usize,
 }
 
-#[derive(Default)]
-pub struct RectangleMutator {
-    random: Random,
-}
+#[derive(Debug, Default)]
+pub struct RectangleMutator;
 
 impl RectangleMutator {
-    fn get_random_rectangle(&mut self, image: &Image) -> RandomRectangle {
+    fn get_random_rectangle(&self, random: &mut Random, image: &Image) -> RandomRectangle {
         let image_width = image.width();
         let image_height = image.height();
 
-        let x = self.random.get_random(0usize, image_width - 1);
-        let y = self.random.get_random(0usize, image_height - 1);
+        let x = random.get_random(0usize, image_width - 1);
+        let y = random.get_random(0usize, image_height - 1);
 
-        let width = self.random.get_random(0usize, image_width - x) + 1;
-        let height = self.random.get_random(0usize, image_height - y) + 1;
+        let width = random.get_random(0usize, image_width - x) + 1;
+        let height = random.get_random(0usize, image_height - y) + 1;
 
         RandomRectangle {
             x,
@@ -35,14 +33,16 @@ impl RectangleMutator {
 }
 
 impl Mutator for RectangleMutator {
-    fn mutate_rgb(&mut self, image: &mut Image) {
-        let rect = self.get_random_rectangle(image);
+    fn mutate_rgb(&self, image: &mut Image) {
+        let mut random = Random::default();
+
+        let rect = self.get_random_rectangle(&mut random, image);
 
         let image_width = image.width();
 
-        let r = self.random.get_random(0u8, 255);
-        let g = self.random.get_random(0u8, 255);
-        let b = self.random.get_random(0u8, 255);
+        let r = random.get_random(0u8, 255);
+        let g = random.get_random(0u8, 255);
+        let b = random.get_random(0u8, 255);
 
         for i in rect.x..(rect.width + rect.x) {
             for j in rect.y..(rect.height + rect.y) {
@@ -54,12 +54,14 @@ impl Mutator for RectangleMutator {
         }
     }
 
-    fn mutate_grayscale(&mut self, image: &mut Image) {
-        let rect = self.get_random_rectangle(image);
+    fn mutate_grayscale(&self, image: &mut Image) {
+        let mut random = Random::default();
+
+        let rect = self.get_random_rectangle(&mut random, image);
 
         let image_width = image.width();
 
-        let grayscale = self.random.get_random(0u8, 255);
+        let grayscale = random.get_random(0u8, 255);
 
         for i in rect.x..(rect.width + rect.x) {
             for j in rect.y..(rect.height + rect.y) {
