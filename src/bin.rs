@@ -15,7 +15,7 @@ fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
     }
 }
 
-fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + 'static>> {
+fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + 'static>> {
     match name {
         "Rectangle" => Ok(Box::new(RectangleMutator::default())),
         "Triangle" => Ok(Box::new(TriangleMutator::default())),
@@ -23,7 +23,7 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + 'static>
     }
 }
 
-fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + 'static>> {
+fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + Sync + 'static>> {
     match name {
         "SquareDistance" => Ok(Box::new(SquareDistance::default())),
         "AbsoluteDistance" => Ok(Box::new(AbsoluteDistance::default())),
@@ -69,6 +69,11 @@ fn main() -> Result<()> {
     // usize.
     let generation_size: usize = args.get_value_t("generation_size")?;
     environment_builder.set_generation_size(generation_size);
+
+    // Safety: it's safe to unwrap because this argument has a validator which checks if the value can be parsed to a
+    // usize.
+    let threads: usize = args.get_value_t("threads")?;
+    environment_builder.set_threads(threads);
 
     if args.is_present("display") {
         if args.is_present("display_all") {

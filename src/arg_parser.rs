@@ -11,6 +11,10 @@ const MODE_INFO: &str =
     separately. \"grayscale\" indicates that all color channels should be mutated together, resulting in a grayscale \
     image.";
 
+const THREADS_INFO: &str =
+    "Number of working threads used to mutate specimens and calculate their fitness. This number must be a positive \
+    integer.";
+
 const DISPLAY_ALL_INFO: &str =
     "Displays best specimen from every generation. This option conflicts with display-every. Only one of them can be \
     used at the same time.";
@@ -21,7 +25,7 @@ const DISPLAY_EVERY_INFO: &str =
 
 const OUTPUT_DIRECTORY_INFO: &str =
     "Path to the output directory in which generated images will be saved. Given path must exist and point to a \
-    directory. The argument has no effect if neither save-all, nor save-every have been given too.";
+    directory. The argument has no effect if neither save-all, nor save-every has been given too.";
 
 const SAVE_ALL_INFO: &str =
     "Saves best specimen from every generation. This option conflicts with save-every. Only one of them can be used at \
@@ -38,6 +42,19 @@ fn validate_generation_size(s: &str) -> Result<(), String> {
                 Ok(())
             } else {
                 Err(String::from("Generation size cannot be smaller than 3."))
+            }
+        }
+        Err(msg) => Err(msg.to_string()),
+    }
+}
+
+fn validate_threads(s: &str) -> Result<(), String> {
+    match s.parse::<usize>() {
+        Ok(num) => {
+            if num > 0 {
+                Ok(())
+            } else {
+                Err(String::from("TNumber of workers cannot be 0."))
             }
         }
         Err(msg) => Err(msg.to_string()),
@@ -125,12 +142,24 @@ fn get_app() -> App<'static> {
                 .display_order(60),
         )
         .arg(
+            Arg::new("threads")
+                .short('t')
+                .long("threads")
+                .long_help(THREADS_INFO)
+                .takes_value(true)
+                .forbid_empty_values(true)
+                .default_value("1")
+                .value_name("N")
+                .validator(validate_threads)
+                .display_order(70),
+        )
+        .arg(
             Arg::new("display_all")
                 .long("display-all")
                 .long_help(DISPLAY_ALL_INFO)
                 .takes_value(false)
                 .group("display")
-                .display_order(70),
+                .display_order(80),
         )
         .arg(
             Arg::new("display_every")
@@ -141,7 +170,7 @@ fn get_app() -> App<'static> {
                 .value_name("N")
                 .group("display")
                 .validator(validate_every)
-                .display_order(80),
+                .display_order(90),
         )
         .arg(
             Arg::new("output_directory")
@@ -151,7 +180,7 @@ fn get_app() -> App<'static> {
                 .forbid_empty_values(true)
                 .value_name("DIR")
                 .value_hint(ValueHint::DirPath)
-                .display_order(90),
+                .display_order(100),
         )
         .arg(
             Arg::new("save_all")
@@ -159,7 +188,7 @@ fn get_app() -> App<'static> {
                 .long_help(SAVE_ALL_INFO)
                 .takes_value(false)
                 .group("output")
-                .display_order(100),
+                .display_order(110),
         )
         .arg(
             Arg::new("save_every")
@@ -170,7 +199,7 @@ fn get_app() -> App<'static> {
                 .value_name("N")
                 .group("output")
                 .validator(validate_every)
-                .display_order(110),
+                .display_order(120),
         )
 }
 
@@ -493,6 +522,64 @@ mod test {
     fn generationSize_valueSmallerThan3_validationFailed() {
         let result =
             get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-g", "2"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn generationSize_valueIsNotNumber_validationFailed() {
+        let result =
+            get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-g", "FOO"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn threads_threadsIsNotSpecified_defaultValueSet() {
+        let result = get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH"]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(1usize, result.value_of_t("threads").unwrap_or_default());
+    }
+
+    #[test]
+    fn threads_threadsIsSpecified_validationPassed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--threads",
+            "6",
+        ]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(6usize, result.value_of_t("threads").unwrap_or_default());
+    }
+
+    #[test]
+    fn threads_shortNameGiven_validationPassed() {
+        let result =
+            get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-t", "15"]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(15usize, result.value_of_t("threads").unwrap_or_default());
+    }
+
+    #[test]
+    fn threads_valueEqualTo0_validationFailed() {
+        let result =
+            get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-t", "0"]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn threads_valueIsNotNumber_validationFailed() {
+        let result =
+            get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-t", "FOO"]);
 
         assert!(result.is_err());
     }

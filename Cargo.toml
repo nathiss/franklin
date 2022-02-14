@@ -14,6 +14,7 @@ anyhow = "1.0.53"
 show-image = "0.10.1"
 rand = "0.8.4"
 clap = { version = "3.0.14", features = ["cargo"] }
+rayon = "1.5.1"
 
 [lib]
 name = "franklin"
