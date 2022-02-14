@@ -16,7 +16,7 @@ fn get_best_size(generation_size: usize) -> usize {
     assert!(generation_size > 2, "Generation size must be grater than 2.");
 
     if generation_size >= 100 {
-        generation_size / 100
+        generation_size / 50
     } else {
         2
     }
