@@ -118,7 +118,9 @@ impl Environment {
                     }
                 }
 
-                // TODO: check if this .unwrap() can stay here
+                // Safety: it's ok to unwrap here because the flow of the program guarantees that the Receiver<T> (rx)
+                // will outlive all Senders<T> (tx).
+                // See: https://doc.rust-lang.org/std/sync/mpsc/struct.Sender.html#method.send
                 tx.send(entry).unwrap();
             });
         });
