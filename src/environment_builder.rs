@@ -123,6 +123,7 @@ impl EnvironmentBuilder {
 }
 
 impl Default for EnvironmentBuilder {
+    #[must_use]
     fn default() -> Self {
         Self {
             image: None,

@@ -11,6 +11,7 @@ pub(crate) struct JobContext {
 }
 
 impl JobContext {
+    #[must_use]
     pub fn new(
         image: Image,
         mutator: Box<dyn Mutator + Send + Sync>,

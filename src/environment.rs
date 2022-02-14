@@ -60,6 +60,7 @@ pub struct Environment {
 }
 
 impl Environment {
+    #[must_use]
     pub fn new(
         image: Image,
         color_mode: ColorMode,
@@ -86,6 +87,7 @@ impl Environment {
         }
     }
 
+    #[must_use]
     fn mutate_generation(mut self) -> Self {
         let mut new_generation = Vec::with_capacity(self.generation.len());
         let mut old_generation = self.generation.into_iter();

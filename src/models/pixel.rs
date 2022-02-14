@@ -6,14 +6,17 @@ pub struct Pixel {
 }
 
 impl Pixel {
+    #[must_use]
     pub const fn white() -> Self {
         Pixel::new(255, 255, 255)
     }
 
+    #[must_use]
     pub const fn grayscale(grayscale: u8) -> Self {
         Pixel::new(grayscale, grayscale, grayscale)
     }
 
+    #[must_use]
     pub const fn new(r: u8, g: u8, b: u8) -> Self {
         Pixel { r, g, b }
     }
@@ -48,6 +51,7 @@ impl Pixel {
         self.b(grayscale);
     }
 
+    #[must_use]
     pub fn as_slice(&self) -> [u8; 3] {
         [self.r, self.g, self.b]
     }

@@ -209,6 +209,7 @@ pub struct ArgParser {
 }
 
 impl ArgParser {
+    #[must_use]
     pub fn get_value(&self, key: &str) -> Option<&str> {
         self.arg_matches.value_of(key)
     }
@@ -221,12 +222,14 @@ impl ArgParser {
         Ok(self.arg_matches.value_of_t::<T>(key)?)
     }
 
+    #[must_use]
     pub fn is_present(&self, key: &str) -> bool {
         self.arg_matches.is_present(key)
     }
 }
 
 impl Default for ArgParser {
+    #[must_use]
     fn default() -> Self {
         Self {
             arg_matches: get_app().get_matches(),

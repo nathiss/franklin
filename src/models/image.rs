@@ -10,6 +10,7 @@ pub struct Image {
 }
 
 impl Image {
+    #[must_use]
     pub fn new(height: usize, width: usize, pixels: Vec<Pixel>) -> Self {
         Self {
             height,
@@ -18,6 +19,7 @@ impl Image {
         }
     }
 
+    #[must_use]
     pub fn blank(height: usize, width: usize, pixel: &Pixel) -> Self {
         let size = height * width;
         let mut pixels = Vec::with_capacity(size as usize);
@@ -45,6 +47,7 @@ impl Image {
         &self.pixels
     }
 
+    #[must_use]
     pub fn as_raw_bytes(&self) -> Vec<u8> {
         self.pixels.iter().fold(
             Vec::with_capacity(self.pixels().len() * 3),

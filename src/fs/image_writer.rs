@@ -11,6 +11,7 @@ pub struct ImageWriter {
 }
 
 impl ImageWriter {
+    #[must_use]
     pub fn to_dir(output_directory: &str) -> Self {
         Self {
             output_directory: Path::new(output_directory).to_owned(),
