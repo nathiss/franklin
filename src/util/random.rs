@@ -4,6 +4,7 @@ use rand::{
     SeedableRng,
 };
 
+#[derive(Debug)]
 pub struct Random {
     rng: StdRng,
 }
