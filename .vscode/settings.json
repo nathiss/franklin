@@ -1,9 +1,11 @@
 {
     "cSpell.words": [
         "canonicalize",
+        "cpus",
         "Halfs",
         "mutators",
         "rngs",
-        "Seedable"
+        "Seedable",
+        "threadpool"
     ]
 }

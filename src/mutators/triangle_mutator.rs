@@ -19,24 +19,22 @@ struct Point {
     y: isize,
 }
 
-#[derive(Default)]
-pub struct TriangleMutator {
-    random: Random,
-}
+#[derive(Debug, Default)]
+pub struct TriangleMutator;
 
 impl TriangleMutator {
-    fn get_random_point(&mut self, image: &Image) -> Point {
-        let x = self.random.get_random(0isize, image.width() as isize - 1);
-        let y = self.random.get_random(0isize, image.height() as isize - 1);
+    fn get_random_point(&self, random: &mut Random, image: &Image) -> Point {
+        let x = random.get_random(0isize, image.width() as isize - 1);
+        let y = random.get_random(0isize, image.height() as isize - 1);
 
         Point { x, y }
     }
 
-    fn get_triangle_vertices(&mut self, image: &Image) -> [Point; 3] {
+    fn get_triangle_vertices(&self, random: &mut Random, image: &Image) -> [Point; 3] {
         let mut vertices = Vec::new();
 
         while vertices.len() != 3 {
-            let point = self.get_random_point(image);
+            let point = self.get_random_point(random, image);
 
             if !vertices.contains(&point) {
                 vertices.push(point);
@@ -49,11 +47,11 @@ impl TriangleMutator {
         [vertices[0], vertices[1], vertices[2]]
     }
 
-    fn draw_triangle<F>(&mut self, image: &mut Image, pixel_mutator: F)
+    fn draw_triangle<F>(&self, random: &mut Random, image: &mut Image, pixel_mutator: F)
     where
         F: Fn(&mut Pixel),
     {
-        let vertices = self.get_triangle_vertices(image);
+        let vertices = self.get_triangle_vertices(random, image);
 
         let (dx_far, dx_upper, dx_low) = get_dx(&vertices);
 
@@ -112,10 +110,12 @@ impl TriangleMutator {
 }
 
 impl Mutator for TriangleMutator {
-    fn mutate_rgb(&mut self, image: &mut Image) {
-        let r = self.random.get_random(0u8, 255);
-        let g = self.random.get_random(0u8, 255);
-        let b = self.random.get_random(0u8, 255);
+    fn mutate_rgb(&self, image: &mut Image) {
+        let mut random = Random::default();
+
+        let r = random.get_random(0u8, 255);
+        let g = random.get_random(0u8, 255);
+        let b = random.get_random(0u8, 255);
 
         let rgb_pixel_mutator = move |p: &mut Pixel| {
             p.r(r);
@@ -123,14 +123,16 @@ impl Mutator for TriangleMutator {
             p.b(b);
         };
 
-        self.draw_triangle(image, rgb_pixel_mutator);
+        self.draw_triangle(&mut random, image, rgb_pixel_mutator);
     }
 
-    fn mutate_grayscale(&mut self, image: &mut Image) {
-        let grayscale = self.random.get_random(0u8, 255);
+    fn mutate_grayscale(&self, image: &mut Image) {
+        let mut random = Random::default();
+
+        let grayscale = random.get_random(0u8, 255);
 
         let grayscale_pixel_mutator = move |p: &mut Pixel| p.set_grayscale(grayscale);
 
-        self.draw_triangle(image, grayscale_pixel_mutator);
+        self.draw_triangle(&mut random, image, grayscale_pixel_mutator);
     }
 }

@@ -16,6 +16,8 @@ pub mod crossover;
 
 pub mod fitness;
 
+pub(crate) mod job_context;
+
 mod models;
 
 pub mod mutators;

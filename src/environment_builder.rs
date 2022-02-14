@@ -1,6 +1,7 @@
 use std::{fs, path::Path};
 
 use anyhow::{Error, Result};
+use rayon::ThreadPoolBuilder;
 
 use crate::{
     crossover::{CrossoverFunction, EqualHalfsCrossover},
@@ -14,10 +15,11 @@ use crate::{
 pub struct EnvironmentBuilder {
     image: Option<Image>,
     color_mode: ColorMode,
-    mutator: Box<dyn Mutator + Send>,
-    fitness: Box<dyn FitnessFunction + Send>,
+    mutator: Box<dyn Mutator + Send + Sync>,
+    fitness: Box<dyn FitnessFunction + Send + Sync>,
     crossover: Box<dyn CrossoverFunction + Send>,
     generation_size: usize,
+    threads: usize,
     display_condition: DisplayCondition,
     output_directory: String,
     save_condition: SaveCondition,
@@ -32,11 +34,11 @@ impl EnvironmentBuilder {
         self.color_mode = color_mode;
     }
 
-    pub fn set_mutator(&mut self, mutator: Box<dyn Mutator + Send>) {
+    pub fn set_mutator(&mut self, mutator: Box<dyn Mutator + Send + Sync>) {
         self.mutator = mutator;
     }
 
-    pub fn set_fitness_function(&mut self, fitness: Box<dyn FitnessFunction + Send>) {
+    pub fn set_fitness_function(&mut self, fitness: Box<dyn FitnessFunction + Send + Sync>) {
         self.fitness = fitness;
     }
 
@@ -46,6 +48,10 @@ impl EnvironmentBuilder {
 
     pub fn set_generation_size(&mut self, generation_size: usize) {
         self.generation_size = generation_size;
+    }
+
+    pub fn set_threads(&mut self, threads: usize) {
+        self.threads = threads;
     }
 
     pub fn set_display_condition(&mut self, display_condition: DisplayCondition) {
@@ -87,6 +93,10 @@ impl EnvironmentBuilder {
                 generation_size: 0, ..
             } => Err(Error::msg("Generation size cannot be zero")),
             _ => {
+                ThreadPoolBuilder::new()
+                    .num_threads(self.threads)
+                    .build_global()?;
+
                 let should_save_specimen: Box<dyn Fn(u32) -> bool + Send> =
                     match self.save_condition {
                         SaveCondition::All => Box::new(|_| true),
@@ -113,6 +123,7 @@ impl EnvironmentBuilder {
 }
 
 impl Default for EnvironmentBuilder {
+    #[must_use]
     fn default() -> Self {
         Self {
             image: None,
@@ -121,6 +132,7 @@ impl Default for EnvironmentBuilder {
             fitness: Box::new(SquareDistance::default()),
             crossover: Box::new(EqualHalfsCrossover::default()),
             generation_size: 100,
+            threads: 1,
             display_condition: DisplayCondition::None,
             output_directory: String::new(),
             save_condition: SaveCondition::Never,

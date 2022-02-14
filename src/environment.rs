@@ -1,10 +1,14 @@
+use std::sync::mpsc::channel;
+
 use anyhow::Result;
 use rand::prelude::SliceRandom;
+use rayon::spawn;
 
 use crate::{
     crossover::CrossoverFunction,
     display::Window,
     fitness::FitnessFunction,
+    job_context::JobContext,
     models::{Image, Pixel},
     mutators::Mutator,
     util::Random,
@@ -13,21 +17,36 @@ use crate::{
 
 fn get_best_size(generation_size: usize) -> usize {
     // This should always be true. arg_parser::validate_generation_size ensures valid generation size.
-    assert!(generation_size > 2, "Generation size must be grater than 2.");
+    assert!(
+        generation_size > 2,
+        "Generation size must be grater than 2."
+    );
 
     if generation_size >= 100 {
-        generation_size / 100
+        generation_size / 50
     } else {
         2
     }
 }
 
+fn get_first_generation(
+    vec_len: usize,
+    image_height: usize,
+    image_width: usize,
+) -> Vec<(Image, usize)> {
+    let mut vec = Vec::with_capacity(vec_len);
+
+    let pixel = Pixel::white();
+
+    vec.resize_with(vec_len, || {
+        (Image::blank(image_height, image_width, &pixel), usize::MAX)
+    });
+
+    vec
+}
+
 pub struct Environment {
-    image: Image,
-    color_mode: ColorMode,
-    generation_size: usize,
-    mutator: Box<dyn Mutator + Send>,
-    fitness: Box<dyn FitnessFunction + Send>,
+    job_context: JobContext,
     crossover: Box<dyn CrossoverFunction + Send>,
     display_condition: DisplayCondition,
     should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
@@ -41,27 +60,26 @@ pub struct Environment {
 }
 
 impl Environment {
+    #[must_use]
     pub fn new(
         image: Image,
         color_mode: ColorMode,
         generation_size: usize,
-        mutator: Box<dyn Mutator + Send>,
-        fitness: Box<dyn FitnessFunction + Send>,
+        mutator: Box<dyn Mutator + Send + Sync>,
+        fitness: Box<dyn FitnessFunction + Send + Sync>,
         crossover: Box<dyn CrossoverFunction + Send>,
         display_condition: DisplayCondition,
         output_directory: &str,
         should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
     ) -> Self {
+        let generation = get_first_generation(generation_size, image.height(), image.width());
+
         Self {
-            image,
-            color_mode,
-            generation_size,
-            mutator,
-            fitness,
+            job_context: JobContext::new(image, mutator, fitness, color_mode),
             crossover,
             display_condition,
             should_save_specimen,
-            generation: Vec::with_capacity(generation_size),
+            generation,
             best_from_generation_size: get_best_size(generation_size),
             current_generation_number: 0,
             random: Random::default(),
@@ -69,46 +87,61 @@ impl Environment {
         }
     }
 
-    fn prepare_first_generation(&mut self) {
-        let height = self.image.height();
-        let width = self.image.width();
-        let pixel = Pixel::white();
+    #[must_use]
+    fn mutate_generation(mut self) -> Self {
+        let mut new_generation = Vec::with_capacity(self.generation.len());
+        let mut old_generation = self.generation.into_iter();
 
-        for _ in 0..self.generation_size {
-            self.generation
-                .push((Image::blank(height, width, &pixel), usize::MAX));
-        }
-    }
+        // Safety: it's safe to unwrap here because generation always has fixed number of specimens and it cannot be
+        // less than 3.
+        new_generation.push(old_generation.next().unwrap());
 
-    fn run_single_generation(&mut self) -> Result<()> {
-        self.generation
-            .iter_mut()
-            // We skip the first element to make sure we always make progress or stay with the same image
-            .skip(1)
-            .for_each(|mut entry| {
-                // Mutate & calculate fitness
-                match self.color_mode {
+        let (tx, rx) = channel();
+
+        old_generation.for_each(|mut entry| {
+            let tx = tx.clone();
+            let context = self.job_context.clone();
+
+            spawn(move || {
+                match context.get_color_mode() {
                     ColorMode::Rgb => {
-                        self.mutator.mutate_rgb(&mut entry.0);
-                        entry.1 = self.fitness.calculate_fitness_rgb(&self.image, &entry.0);
+                        context.get_mutator().mutate_rgb(&mut entry.0);
+                        entry.1 = context
+                            .get_fitness()
+                            .calculate_fitness_rgb(&*context.get_image(), &entry.0);
                     }
                     ColorMode::Grayscale => {
-                        self.mutator.mutate_grayscale(&mut entry.0);
-                        entry.1 = self
-                            .fitness
-                            .calculate_fitness_grayscale(&self.image, &entry.0);
+                        context.get_mutator().mutate_grayscale(&mut entry.0);
+                        entry.1 = context
+                            .get_fitness()
+                            .calculate_fitness_grayscale(&*context.get_image(), &entry.0);
                     }
                 }
+
+                // TODO: check if this .unwrap() can stay here
+                tx.send(entry).unwrap();
             });
+        });
+
+        drop(tx);
+        new_generation.extend(rx.iter());
+        self.generation = new_generation;
+
+        self
+    }
+
+    fn run_single_generation(mut self) -> Result<Self> {
+        self = self.mutate_generation();
 
         // Sort
         self.generation.sort_by(|a, b| a.1.cmp(&b.1));
 
         // Dump worst
+        let generation_size = self.generation.len();
         self.generation.truncate(self.best_from_generation_size);
 
         // Crossover
-        for _ in 0..self.generation_size - self.best_from_generation_size {
+        for _ in 0..generation_size - self.best_from_generation_size {
             let parents = self
                 .generation
                 .choose_multiple(self.random.get_rng(), 2)
@@ -125,12 +158,10 @@ impl Environment {
             self.current_generation_number, self.generation[0].1
         );
 
-        Ok(())
+        Ok(self)
     }
 
-    pub fn run(mut self) -> Result<()> {
-        self.prepare_first_generation();
-
+    pub fn run(self) -> Result<()> {
         match &self.display_condition {
             DisplayCondition::All | DisplayCondition::Every(_) => self.run_with_window(),
             DisplayCondition::None => self.run_without_window(),
@@ -138,10 +169,13 @@ impl Environment {
     }
 
     fn run_with_window(mut self) -> Result<()> {
-        let dimensions = (self.image.height(), self.image.width());
+        let dimensions = (
+            self.job_context.get_image().height(),
+            self.job_context.get_image().width(),
+        );
         Window::run_with_context(dimensions, move |mut window| -> Result<()> {
             while !window.should_exit() {
-                self.run_single_generation()?;
+                self = self.run_single_generation()?;
 
                 let should_display_window = match self.display_condition {
                     DisplayCondition::All => true,
@@ -167,7 +201,7 @@ impl Environment {
 
     fn run_without_window(mut self) -> Result<()> {
         loop {
-            self.run_single_generation()?;
+            self = self.run_single_generation()?;
 
             if (self.should_save_specimen)(self.current_generation_number) {
                 self.save_best_specimen()?;
