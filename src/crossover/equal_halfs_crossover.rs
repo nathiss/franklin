@@ -8,16 +8,28 @@ pub struct EqualHalfsCrossover;
 impl CrossoverFunction for EqualHalfsCrossover {
     fn crossover(&mut self, first_image: &Image, second_image: &Image) -> Image {
         let size = first_image.pixels().len();
-        let mut pixels = first_image
+
+        let number_of_pixels_from_first_image = if size % 2 == 0 {
+            size / 2
+        } else {
+            size / 2 + 1
+        };
+
+        let number_of_pixels_from_second_image = size / 2;
+
+        let pixels = first_image
             .pixels()
             .iter()
-            .take(size / 2 + 1)
-            .chain(second_image.pixels().iter().take(size / 2))
+            .take(number_of_pixels_from_first_image)
+            .chain(
+                second_image
+                    .pixels()
+                    .iter()
+                    .skip(number_of_pixels_from_first_image)
+                    .take(number_of_pixels_from_second_image),
+            )
             .cloned()
             .collect::<Vec<Pixel>>();
-
-        // TODO: should not be nesesery
-        pixels.truncate(size);
 
         Image::new(first_image.height(), first_image.width(), pixels)
     }
