@@ -25,6 +25,7 @@ impl CrossoverFunction for EqualHalfsCrossover {
                 second_image
                     .pixels()
                     .iter()
+                    .skip(number_of_pixels_from_first_image)
                     .take(number_of_pixels_from_second_image),
             )
             .cloned()
