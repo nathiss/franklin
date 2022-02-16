@@ -125,7 +125,7 @@ fn get_app() -> App<'static> {
                 .long("crossover")
                 .help("Crossover function used to breed specimens")
                 .takes_value(true)
-                .possible_values(["LeftOrRight", "EqualHalfs"])
+                .possible_values(["LeftOrRight", "EqualHalfs", "ArithmeticAverage"])
                 .default_value("LeftOrRight")
                 .display_order(50),
         )
@@ -476,6 +476,24 @@ mod test {
             get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-c", "FOO"]);
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn crossover_arithmeticAverageExistsInPossibleValues_validationPassed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "-c",
+            "ArithmeticAverage",
+        ]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(
+            "ArithmeticAverage",
+            result.value_of("crossover").unwrap_or_default()
+        );
     }
 
     #[test]
