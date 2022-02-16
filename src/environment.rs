@@ -185,8 +185,10 @@ impl Environment {
                 };
 
                 if should_display_window {
-                    // TODO: change this title
-                    window.show_image("Lorem ipsum", &self.generation[0].0)?;
+                    window.show_image(
+                        &format!("Generation #{}", self.current_generation_number),
+                        &self.generation[0].0,
+                    )?;
                 }
 
                 if (self.should_save_specimen)(self.current_generation_number) {
