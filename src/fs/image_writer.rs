@@ -1,4 +1,4 @@
-use std::path::{Path, PathBuf};
+use std::path::PathBuf;
 
 use anyhow::Result;
 use image::ColorType;
@@ -6,20 +6,25 @@ use image::ColorType;
 use crate::models::Image;
 
 #[derive(Debug)]
-pub struct ImageWriter {
+pub(crate) struct ImageWriter {
     output_directory: PathBuf,
+    filename_prefix: String,
 }
 
 impl ImageWriter {
     #[must_use]
-    pub fn to_dir(output_directory: &str) -> Self {
+    pub(crate) fn new(output_directory: String, filename_prefix: String) -> Self {
         Self {
-            output_directory: Path::new(output_directory).to_owned(),
+            output_directory: PathBuf::from(output_directory),
+            filename_prefix,
         }
     }
 
-    pub fn write(&self, filename: &str, image: &Image) -> Result<()> {
-        let full_path = self.output_directory.join(filename);
+    pub(crate) fn write(&self, current_generation_number: u32, image: &Image) -> Result<()> {
+        let full_path = self.output_directory.join(format!(
+            "{}{:0>6}.png",
+            self.filename_prefix, current_generation_number
+        ));
 
         image::save_buffer(
             full_path,

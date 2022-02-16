@@ -90,6 +90,10 @@ fn main() -> Result<()> {
     }
 
     if let Some(output_directory) = args.get_value("output_directory") {
+        // Safety: it's safe to unwrap because this argument has a default value, i.e. it cannot be empty or None.
+        let filename_prefix = args.get_value("filename_prefix").unwrap();
+        environment_builder.set_filename_prefix(filename_prefix);
+
         let save_condition = if args.is_present("save_all") {
             SaveCondition::All
         } else if let Ok(per) = args.get_value_t::<u32>("save_every") {
