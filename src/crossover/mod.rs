@@ -1,6 +1,9 @@
 mod crossover_function;
 pub use crossover_function::CrossoverFunction;
 
+mod arithmetic_average_crossover;
+pub use arithmetic_average_crossover::ArithmeticAverageCrossover;
+
 mod equal_halfs_crossover;
 pub use equal_halfs_crossover::EqualHalfsCrossover;
 

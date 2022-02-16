@@ -1,7 +1,10 @@
 use anyhow::{Error, Result};
 
 use franklin::{
-    crossover::{CrossoverFunction, EqualHalfsCrossover, LeftOrRightCloneCrossover},
+    crossover::{
+        ArithmeticAverageCrossover, CrossoverFunction, EqualHalfsCrossover,
+        LeftOrRightCloneCrossover,
+    },
     fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
     mutators::{Mutator, RectangleMutator, TriangleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
@@ -35,6 +38,7 @@ fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Sen
     match name {
         "LeftOrRight" => Ok(Box::new(LeftOrRightCloneCrossover::default())),
         "EqualHalfs" => Ok(Box::new(EqualHalfsCrossover::default())),
+        "ArithmeticAverage" => Ok(Box::new(ArithmeticAverageCrossover::default())),
         _ => Err(Error::msg("Unknown crossover function.")),
     }
 }
