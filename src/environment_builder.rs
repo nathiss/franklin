@@ -7,6 +7,7 @@ use crate::{
     crossover::{CrossoverFunction, EqualHalfsCrossover},
     environment::Environment,
     fitness::{FitnessFunction, SquareDistance},
+    job_context::JobContext,
     models::Image,
     mutators::{Mutator, RectangleMutator},
     ColorMode, DisplayCondition, SaveCondition,
@@ -106,12 +107,17 @@ impl EnvironmentBuilder {
                         SaveCondition::Never => Box::new(|_| false),
                     };
 
-                Ok(Environment::new(
+                // Safety: it's safe to unwrap the image because None-case is captured in the first arm.
+                let job_context = JobContext::new(
                     self.image.unwrap(),
-                    self.color_mode,
-                    self.generation_size,
                     self.mutator,
                     self.fitness,
+                    self.color_mode,
+                );
+
+                Ok(Environment::new(
+                    job_context,
+                    self.generation_size,
                     self.crossover,
                     self.display_condition,
                     &self.output_directory,

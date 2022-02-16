@@ -7,10 +7,8 @@ use rayon::spawn;
 use crate::{
     crossover::CrossoverFunction,
     display::Window,
-    fitness::FitnessFunction,
     job_context::JobContext,
     models::{Image, Pixel},
-    mutators::Mutator,
     util::Random,
     ColorMode, DisplayCondition, ImageWriter,
 };
@@ -61,21 +59,22 @@ pub struct Environment {
 
 impl Environment {
     #[must_use]
-    pub fn new(
-        image: Image,
-        color_mode: ColorMode,
+    pub(crate) fn new(
+        job_context: JobContext,
         generation_size: usize,
-        mutator: Box<dyn Mutator + Send + Sync>,
-        fitness: Box<dyn FitnessFunction + Send + Sync>,
         crossover: Box<dyn CrossoverFunction + Send>,
         display_condition: DisplayCondition,
         output_directory: &str,
         should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
     ) -> Self {
-        let generation = get_first_generation(generation_size, image.height(), image.width());
+        let generation = get_first_generation(
+            generation_size,
+            job_context.get_image().height(),
+            job_context.get_image().width(),
+        );
 
         Self {
-            job_context: JobContext::new(image, mutator, fitness, color_mode),
+            job_context,
             crossover,
             display_condition,
             should_save_specimen,
