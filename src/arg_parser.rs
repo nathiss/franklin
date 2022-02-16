@@ -3,7 +3,8 @@ use std::{fmt::Display, str::FromStr};
 use anyhow::Result;
 
 use clap::{
-    crate_authors, crate_description, crate_name, crate_version, App, Arg, ArgMatches, ValueHint,
+    crate_authors, crate_description, crate_name, crate_version, Arg, ArgMatches, Command,
+    ValueHint,
 };
 
 const MODE_INFO: &str =
@@ -26,6 +27,10 @@ const DISPLAY_EVERY_INFO: &str =
 const OUTPUT_DIRECTORY_INFO: &str =
     "Path to the output directory in which generated images will be saved. Given path must exist and point to a \
     directory. The argument has no effect if neither save-all, nor save-every has been given too.";
+
+const FILENAME_PREFIX_INFO: &str =
+    "Filename prefix for output images. The prefix is concatenated with current generation number and PNG extension. \
+    The argument has no effect if neither save-all, nor save-every has been given too.";
 
 const SAVE_ALL_INFO: &str =
     "Saves best specimen from every generation. This option conflicts with save-every. Only one of them can be used at \
@@ -74,8 +79,8 @@ fn validate_every(s: &str) -> Result<(), String> {
     }
 }
 
-fn get_app() -> App<'static> {
-    App::new(crate_name!())
+fn get_app() -> Command<'static> {
+    Command::new(crate_name!())
         .author(crate_authors!("\n"))
         .about(crate_description!())
         .version(crate_version!())
@@ -183,12 +188,22 @@ fn get_app() -> App<'static> {
                 .display_order(100),
         )
         .arg(
+            Arg::new("filename_prefix")
+                .long("filename-prefix")
+                .long_help(FILENAME_PREFIX_INFO)
+                .takes_value(true)
+                .forbid_empty_values(true)
+                .default_value("output_")
+                .value_name("PREFIX")
+                .display_order(110),
+        )
+        .arg(
             Arg::new("save_all")
                 .long("save-all")
                 .long_help(SAVE_ALL_INFO)
                 .takes_value(false)
                 .group("output")
-                .display_order(110),
+                .display_order(120),
         )
         .arg(
             Arg::new("save_every")
@@ -199,7 +214,7 @@ fn get_app() -> App<'static> {
                 .value_name("N")
                 .group("output")
                 .validator(validate_every)
-                .display_order(120),
+                .display_order(130),
         )
 }
 
@@ -687,7 +702,7 @@ mod test {
             "franklin-cli",
             "--image",
             "PATH",
-            "--output-di",
+            "--output-dir",
             "",
         ]);
 
@@ -722,6 +737,62 @@ mod test {
         assert_eq!(
             "DIR_PATH",
             result.value_of("output_directory").unwrap_or_default()
+        );
+    }
+
+    #[test]
+    fn filenamePrefix_filenamePrefixIsNotSpecified_defaultValue() {
+        let result = get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH"]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(
+            "output_",
+            result.value_of("filename_prefix").unwrap_or_default()
+        );
+    }
+
+    #[test]
+    fn filenamePrefix_filenamePrefixIsEmpty_validationFailed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--filename-prefix",
+            "",
+        ]);
+
+        assert!(result.is_err());
+    }
+
+    #[test]
+    fn filenamePrefix_valueIsNotEmpty_validationPassed() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--filename-prefix",
+            "PREFIX",
+        ]);
+
+        assert!(result.is_ok());
+    }
+
+    #[test]
+    fn filenamePrefix_valueGiven_correctValueReturned() {
+        let result = get_app().try_get_matches_from(vec![
+            "franklin-cli",
+            "--image",
+            "PATH",
+            "--filename-prefix",
+            "PREFIX",
+        ]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!(
+            "PREFIX",
+            result.value_of("filename_prefix").unwrap_or_default()
         );
     }
 

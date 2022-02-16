@@ -64,7 +64,7 @@ impl Environment {
         generation_size: usize,
         crossover: Box<dyn CrossoverFunction + Send>,
         display_condition: DisplayCondition,
-        output_directory: &str,
+        image_writer: ImageWriter,
         should_save_specimen: Box<dyn Fn(u32) -> bool + Send>,
     ) -> Self {
         let generation = get_first_generation(
@@ -82,7 +82,7 @@ impl Environment {
             best_from_generation_size: get_best_size(generation_size),
             current_generation_number: 0,
             random: Random::default(),
-            image_writer: ImageWriter::to_dir(output_directory),
+            image_writer,
         }
     }
 
@@ -213,9 +213,8 @@ impl Environment {
     }
 
     fn save_best_specimen(&self) -> Result<()> {
-        let filename = format!("output_{:0>6}.png", self.current_generation_number);
-
-        self.image_writer.write(&filename, &self.generation[0].0)?;
+        self.image_writer
+            .write(self.current_generation_number, &self.generation[0].0)?;
 
         Ok(())
     }

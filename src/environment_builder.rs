@@ -10,7 +10,7 @@ use crate::{
     job_context::JobContext,
     models::Image,
     mutators::{Mutator, RectangleMutator},
-    ColorMode, DisplayCondition, SaveCondition,
+    ColorMode, DisplayCondition, ImageWriter, SaveCondition,
 };
 
 pub struct EnvironmentBuilder {
@@ -23,6 +23,7 @@ pub struct EnvironmentBuilder {
     threads: usize,
     display_condition: DisplayCondition,
     output_directory: String,
+    filename_prefix: String,
     save_condition: SaveCondition,
 }
 
@@ -87,6 +88,10 @@ impl EnvironmentBuilder {
         }
     }
 
+    pub fn set_filename_prefix(&mut self, filename_prefix: &str) {
+        self.filename_prefix = filename_prefix.to_owned();
+    }
+
     pub fn build(self) -> Result<Environment> {
         match self {
             Self { image: None, .. } => Err(Error::msg("Image must be set.")),
@@ -115,12 +120,15 @@ impl EnvironmentBuilder {
                     self.color_mode,
                 );
 
+                let image_writer =
+                    ImageWriter::new(self.output_directory, self.filename_prefix.to_owned());
+
                 Ok(Environment::new(
                     job_context,
                     self.generation_size,
                     self.crossover,
                     self.display_condition,
-                    &self.output_directory,
+                    image_writer,
                     should_save_specimen,
                 ))
             }
@@ -141,6 +149,7 @@ impl Default for EnvironmentBuilder {
             threads: 1,
             display_condition: DisplayCondition::None,
             output_directory: String::new(),
+            filename_prefix: String::new(),
             save_condition: SaveCondition::Never,
         }
     }
