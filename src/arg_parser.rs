@@ -687,7 +687,7 @@ mod test {
             "franklin-cli",
             "--image",
             "PATH",
-            "--output-di",
+            "--output-dir",
             "",
         ]);
 
