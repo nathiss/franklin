@@ -3,7 +3,8 @@ use std::{fmt::Display, str::FromStr};
 use anyhow::Result;
 
 use clap::{
-    crate_authors, crate_description, crate_name, crate_version, App, Arg, ArgMatches, ValueHint,
+    crate_authors, crate_description, crate_name, crate_version, Arg, ArgMatches, Command,
+    ValueHint,
 };
 
 const MODE_INFO: &str =
@@ -78,8 +79,8 @@ fn validate_every(s: &str) -> Result<(), String> {
     }
 }
 
-fn get_app() -> App<'static> {
-    App::new(crate_name!())
+fn get_app() -> Command<'static> {
+    Command::new(crate_name!())
         .author(crate_authors!("\n"))
         .about(crate_description!())
         .version(crate_version!())
