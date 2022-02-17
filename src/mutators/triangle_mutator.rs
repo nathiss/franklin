@@ -19,6 +19,7 @@ struct Point {
     y: isize,
 }
 
+/// This mutator mutates the given specimen by generating a random triangle with random background color.
 #[derive(Debug, Default)]
 pub struct TriangleMutator;
 

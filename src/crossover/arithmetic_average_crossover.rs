@@ -2,6 +2,8 @@ use crate::models::{Image, Pixel};
 
 use super::CrossoverFunction;
 
+/// This crossover function breeds specimens by calculating arithmetic average of each pixel from both parents and
+/// producing new pixels for the new specimen.
 #[derive(Debug, Default)]
 pub struct ArithmeticAverageCrossover;
 

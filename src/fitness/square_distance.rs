@@ -2,7 +2,9 @@ use crate::models::Pixel;
 
 use super::{fitness_function::fold_images, FitnessFunction};
 
-#[derive(Default)]
+/// This fitness function calculates the fitness of specimens by calculating square of distances between colors of
+/// all respective pixels.
+#[derive(Debug, Default)]
 pub struct SquareDistance;
 
 impl FitnessFunction for SquareDistance {
