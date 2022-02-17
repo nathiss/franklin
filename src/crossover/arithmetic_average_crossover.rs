@@ -14,9 +14,9 @@ impl CrossoverFunction for ArithmeticAverageCrossover {
             .iter()
             .zip(second_image.pixels().iter())
             .map(|(p1, p2)| {
-                let red_average = ((u16::from(p1.get_r()) + u16::from(p2.get_r())) / 2) as u8;
-                let green_average = ((u16::from(p1.get_g()) + u16::from(p2.get_g())) / 2) as u8;
-                let blue_average = ((u16::from(p1.get_b()) + u16::from(p2.get_b())) / 2) as u8;
+                let red_average = p1.get_r() / 2 + p2.get_r() / 2;
+                let green_average = p1.get_g() / 2 + p2.get_g() / 2;
+                let blue_average = p1.get_b() / 2 + p2.get_b() / 2;
 
                 Pixel::new(red_average, green_average, blue_average)
             })
