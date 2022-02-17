@@ -1,3 +1,43 @@
+#![warn(missing_docs)]
+
+//! A CLI utility for generation evolutionary art via [franklin] crate.
+//!
+//! # Installation
+//!
+//! Install with:
+//!
+//! ```
+//! cargo install franklin-cli
+//! ```
+//!
+//! # Usage
+//!
+//! Below are some snippets to help you out.
+//!
+//! ```
+//! // Runs the simulation in RGB mode, using Triangles to mutate the specimens and calculating arithmetic average of
+//! // pixels to breed specimens. The simulation runs on 5 threads.
+//! franklin-cli --image /path/to/source/image.png --mode Rgb --mutator Triangle --crossover ArithmeticAverage --threads 5
+//! ```
+//!
+//! ```
+//! // Runs the simulation in Grayscale mode, using Rectangles to mutate the specimens and displaying best specimen from
+//! // each generation.
+//! franklin-cli --image /path/to/source/image.png --mode Grayscale --mutator Rectangle --display-all
+//! ```
+//!
+//! ```
+//! // Runs the simulation using absolute values to calculate the fitness of specimens and saving best specimen to the
+//! // output directory from every 50th generation.
+//! // each generation.
+//! franklin-cli --image /path/to/source/image.png --fitness AbsoluteDistance --output-dir /output --save-every 50
+//! ```
+//!
+//! To see all supported command line arguments run
+//! ```
+//! franklin-cli --help
+//! ```
+
 use anyhow::{Error, Result};
 
 use franklin::{
@@ -10,6 +50,7 @@ use franklin::{
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
+#[doc(hidden)]
 fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
     match name {
         "Rgb" => Ok(ColorMode::Rgb),
@@ -18,6 +59,7 @@ fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
     }
 }
 
+#[doc(hidden)]
 fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + 'static>> {
     match name {
         "Rectangle" => Ok(Box::new(RectangleMutator::default())),
@@ -26,6 +68,7 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + '
     }
 }
 
+#[doc(hidden)]
 fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + Sync + 'static>> {
     match name {
         "SquareDistance" => Ok(Box::new(SquareDistance::default())),
@@ -34,6 +77,7 @@ fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + 
     }
 }
 
+#[doc(hidden)]
 fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Send + 'static>> {
     match name {
         "LeftOrRight" => Ok(Box::new(LeftOrRightCloneCrossover::default())),
@@ -43,6 +87,15 @@ fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Sen
     }
 }
 
+/// The entry point of the program.
+///
+/// # Usage
+///
+/// To display help use:
+///
+/// ```
+/// franklin-cli --help
+/// ```
 fn main() -> Result<()> {
     let args = ArgParser::default();
 

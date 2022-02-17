@@ -2,7 +2,10 @@ use crate::models::Image;
 
 use super::CrossoverFunction;
 
-#[derive(Default)]
+/// This crossover function breeds specimens by copying either `first_image` or `second_image`.
+///
+/// Selection of the source switches with each call of [LeftOrRightCloneCrossover#crossover] method.
+#[derive(Debug, Default)]
 pub struct LeftOrRightCloneCrossover {
     counter: usize,
 }

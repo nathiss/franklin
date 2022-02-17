@@ -3,9 +3,12 @@ use image::{io::Reader, Pixel as RgbPixel};
 
 use crate::models::{Image, Pixel};
 
+/// This struct can be used to load an image from the filesystem.
+#[derive(Debug)]
 pub struct ImageReader;
 
 impl ImageReader {
+    /// This method load the image pointed by the given path.
     pub fn load(path: &str) -> Result<Image> {
         let image = Reader::open(path)?;
         let image = image.decode()?;

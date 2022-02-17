@@ -9,6 +9,7 @@ struct RandomRectangle {
     height: usize,
 }
 
+/// This mutator mutates the given specimen by generating a random rectangle with random background color.
 #[derive(Debug, Default)]
 pub struct RectangleMutator;
 

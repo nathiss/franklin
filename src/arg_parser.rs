@@ -219,6 +219,7 @@ fn get_app() -> Command<'static> {
 }
 
 #[derive(Debug)]
+#[doc(hidden)]
 pub struct ArgParser {
     arg_matches: ArgMatches,
 }

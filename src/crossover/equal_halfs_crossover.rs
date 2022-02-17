@@ -2,6 +2,8 @@ use crate::models::{Image, Pixel};
 
 use super::CrossoverFunction;
 
+/// This crossover function breeds specimens by taking the first half of the image from `first_image` and the second
+/// half from `second_image`.
 #[derive(Default)]
 pub struct EqualHalfsCrossover;
 
