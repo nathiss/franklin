@@ -50,6 +50,7 @@ use franklin::{
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
+#[doc(hidden)]
 fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
     match name {
         "Rgb" => Ok(ColorMode::Rgb),
@@ -58,6 +59,7 @@ fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
     }
 }
 
+#[doc(hidden)]
 fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + 'static>> {
     match name {
         "Rectangle" => Ok(Box::new(RectangleMutator::default())),
@@ -66,6 +68,7 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + '
     }
 }
 
+#[doc(hidden)]
 fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + Sync + 'static>> {
     match name {
         "SquareDistance" => Ok(Box::new(SquareDistance::default())),
@@ -74,6 +77,7 @@ fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + 
     }
 }
 
+#[doc(hidden)]
 fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Send + 'static>> {
     match name {
         "LeftOrRight" => Ok(Box::new(LeftOrRightCloneCrossover::default())),
@@ -83,6 +87,15 @@ fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Sen
     }
 }
 
+/// The entry point of the program.
+///
+/// # Usage
+///
+/// To display help use:
+///
+/// ```
+/// franklin-cli --help
+/// ```
 fn main() -> Result<()> {
     let args = ArgParser::default();
 
