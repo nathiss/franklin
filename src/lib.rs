@@ -16,7 +16,7 @@
 //! ```
 //! use franklin::{EnvironmentBuilder, ImageReader};
 //!
-//! fn run_simulation<E>() {
+//! fn run_simulation() {
 //!     let mut environment_builder = EnvironmentBuilder::default();
 //!
 //!     let image = ImageReader::load("./example.png").unwrap();
