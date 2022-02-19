@@ -1,6 +1,9 @@
 # franklin
 
 [![franklin-ci](https://github.com/nathiss/franklin/actions/workflows/franklin-ci.yml/badge.svg?branch=development)](https://github.com/nathiss/franklin/actions/workflows/franklin-ci.yml)
+[![Crates.io](https://img.shields.io/crates/v/franklin)](https://crates.io/crates/franklin)
+[![docs.rs](https://docs.rs/franklin/badge.svg)](https://docs.rs/franklin/)
+![Crates.io](https://img.shields.io/crates/l/franklin)
 
 A utility for generating [evolutionary art](https://en.wikipedia.org/wiki/Evolutionary_art).
 

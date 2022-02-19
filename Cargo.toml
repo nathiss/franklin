@@ -1,14 +1,14 @@
 [package]
 name = "franklin"
 description = "A utility for generating images through evolution."
-version = "0.1.0"
+version = "0.1.1"
 edition = "2021"
 rust-version = "1.58"
 authors = ["Kamil Rusin"]
 readme = "README.md"
 homepage = "https://github.com/nathiss/franklin"
 repository = "https://github.com/nathiss/franklin"
-license-file = "LICENSE.txt"
+license = "MIT"
 keywords = ["generic-algorithm", "evolution", "evolutionary-art", "generation"]
 categories = ["command-line-utilities", "simulation"]
 include = ["/src", "Cargo.toml", "LICENSE.txt", "README.md"]
