@@ -45,7 +45,7 @@ franklin-cli --help
 ```
 
 It's also possible to implement your own components, such as mutators, fitness functions or crossover functions.
-Go to docs, to see more details.
+Go to [docs](https://docs.rs/franklin/), to see more details.
 
 ## License
 
