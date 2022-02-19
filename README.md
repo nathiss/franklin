@@ -29,6 +29,15 @@ mix genes of two parents to give birth to new offspring, until new generation wi
 
 ## Usage
 
+The crate is published on [crates.io](https://crates.io/crates/franklin). You can install it with:
+
+```sh
+cargo install franklin
+```
+
+`cargo` is a rust package manager. See [here](https://www.rust-lang.org/learn/get-started) how to set up rust
+environment.
+
 If you want to start a simulation it's best to check all available options in `franklin-cli`:
 
 ```sh
