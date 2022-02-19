@@ -7,7 +7,7 @@
 //! Install with:
 //!
 //! ```
-//! cargo install franklin-cli
+//! cargo install franklin
 //! ```
 //!
 //! # Usage
