@@ -171,8 +171,8 @@ impl Environment {
 
     fn run_with_window(mut self) -> Result<()> {
         let dimensions = (
-            self.job_context.get_image().height(),
             self.job_context.get_image().width(),
+            self.job_context.get_image().height(),
         );
         Window::run_with_context(dimensions, move |mut window| -> Result<()> {
             while !window.should_exit() {

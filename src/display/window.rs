@@ -44,7 +44,7 @@ impl Window {
     }
 
     pub fn show_image(&mut self, title: &str, image: &Image) -> Result<()> {
-        let image_info = ImageInfo::rgb8(image.height() as u32, image.width() as u32);
+        let image_info = ImageInfo::rgb8(image.width() as u32, image.height() as u32);
 
         let image_bytes = image.as_raw_bytes();
         let image_view = ImageView::new(image_info, image_bytes.as_slice());

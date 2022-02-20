@@ -47,6 +47,59 @@ franklin-cli --help
 It's also possible to implement your own components, such as mutators, fitness functions or crossover functions.
 Go to [docs](https://docs.rs/franklin/), to see more details.
 
+## Examples
+
+Here are some examples of images generated with the tool and their CLI arguments.
+
+```sh
+franklin-cli --image "/temp/Lenna_(test_image).png" -t 7 -m Rectangle -f SquareDistance -c EqualHalfs
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #3000) |
+| :----------: | :-------------: |
+| ![Lenna_(test_image).png](./asserts/Lenna_(test_image).png) | ![example_1_3000.png](./asserts/example_1_3000.png) |
+
+---
+
+```sh
+franklin-cli --image "/temp/Lenna_(test_image).png" -t 7 -m Triangle -f SquareDistance -c ArithmeticAverage
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #4000) |
+| :----------: | :-------------: |
+| ![Lenna_(test_image).png](./asserts/Lenna_(test_image).png) | ![example_2_4000.png](./asserts/example_2_4000.png) |
+
+---
+
+```sh
+franklin-cli --image "/temp/Lenna_(test_image).png" -t 7 -m Rectangle -f SquareDistance -c ArithmeticAverage
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #13000) |
+| :----------: | :-------------: |
+| ![Lenna_(test_image).png](./asserts/Lenna_(test_image).png) | ![example_3_13000.png](./asserts/example_3_13000.png) |
+
+---
+
+```sh
+franklin-cli --image "/temp/Mona_Lisa_322_480.png" -t 7 -m Rectangle -f SquareDistance -c LeftOrRight
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #8000) |
+| :----------: | :-------------: |
+| ![Mona_Lisa_322_480.png](./asserts/Mona_Lisa_322_480.png) | ![example_4_8000.png](./asserts/example_4_8000.png) |
+
+---
+
+All examples above (without the source images) are licensed under **CC BY-SA 4.0**. For more details see
+[asserts/README.md](./asserts/README.md).
+
 ## License
 
-See [LICENSE.txt](LICENSE.txt) file.
+The source code is licensed under the MIT license, for more details see [LICENSE.txt](./LICENSE.txt) file.  
+All example images in [asserts](./asserts/) folder are licensed under **CC BY-SA 4.0**, for more details see
+[asserts/LICENSE.txt](./asserts/LICENSE.txt) file.
