@@ -14,12 +14,30 @@ categories = ["command-line-utilities", "simulation"]
 include = ["/src", "Cargo.toml", "LICENSE.txt", "README.md"]
 
 [dependencies]
-image = "0.24.0"
 anyhow = "1.0.53"
 show-image = "0.10.1"
 rand = "0.8.4"
 clap = { version = "3.1.0", features = ["cargo"] }
 rayon = "1.5.1"
+
+[dependencies.image]
+version = "0.24.0"
+default-features = false
+features = [
+    "gif",
+    "jpeg",
+    "ico",
+    "png",
+    "pnm",
+    "tga",
+    "tiff",
+    "webp",
+    "bmp",
+    "hdr",
+    "dxt",
+    "dds",
+    "farbfeld",
+]
 
 [lib]
 name = "franklin"
