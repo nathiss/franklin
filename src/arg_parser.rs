@@ -110,7 +110,7 @@ fn get_app() -> Command<'static> {
                 .long("mutator")
                 .help("Mutator used to mutate specimens")
                 .takes_value(true)
-                .possible_values(["Rectangle", "Triangle"])
+                .possible_values(["Rectangle", "Triangle", "Circle"])
                 .default_value("Rectangle")
                 .display_order(30),
         )
@@ -380,6 +380,16 @@ mod test {
             get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-m", "FOO"]);
 
         assert!(result.is_err());
+    }
+
+    #[test]
+    fn mutator_circlePassedAsValue_validationPassed() {
+        let result =
+            get_app().try_get_matches_from(vec!["franklin-cli", "--image", "PATH", "-m", "Circle"]);
+
+        assert!(result.is_ok());
+        let result = result.unwrap();
+        assert_eq!("Circle", result.value_of("mutator").unwrap_or_default());
     }
 
     #[test]

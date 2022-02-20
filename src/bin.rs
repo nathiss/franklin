@@ -46,7 +46,7 @@ use franklin::{
         LeftOrRightCloneCrossover,
     },
     fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
-    mutators::{Mutator, RectangleMutator, TriangleMutator},
+    mutators::{Mutator, RectangleMutator, TriangleMutator, CircleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
@@ -64,6 +64,7 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + '
     match name {
         "Rectangle" => Ok(Box::new(RectangleMutator::default())),
         "Triangle" => Ok(Box::new(TriangleMutator::default())),
+        "Circle" => Ok(Box::new(CircleMutator::default())),
         _ => Err(Error::msg("Unknown mutator.")),
     }
 }
