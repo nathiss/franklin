@@ -78,9 +78,20 @@ franklin-cli --image "/temp/Lenna_(test_image).png" -t 7 -m Rectangle -f SquareD
     --output-dir "/temp/images" --save-every 100
 ```
 
-| Source image | Generated image (Generation #10000) |
+| Source image | Generated image (Generation #13000) |
 | :----------: | :-------------: |
 | ![Lenna_(test_image).png](./asserts/Lenna_(test_image).png) | ![example_3_13000.png](./asserts/example_3_13000.png) |
+
+---
+
+```sh
+franklin-cli --image "/temp/Mona_Lisa_322_480.png" -t 7 -m Rectangle -f SquareDistance -c LeftOrRight
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #8000) |
+| :----------: | :-------------: |
+| ![Mona_Lisa_322_480.png](./asserts/Mona_Lisa_322_480.png) | ![example_4_8000.png](./asserts/example_4_8000.png) |
 
 ---
 
