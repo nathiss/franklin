@@ -11,7 +11,12 @@ repository = "https://github.com/nathiss/franklin"
 license = "MIT"
 keywords = ["generic-algorithm", "evolution", "evolutionary-art", "generation"]
 categories = ["command-line-utilities", "simulation"]
-include = ["/src", "Cargo.toml", "LICENSE.txt", "README.md"]
+include = [
+    "/src",
+    "./Cargo.toml",
+    "./LICENSE.txt",
+    "./README.md",
+]
 
 [dependencies]
 anyhow = "1.0.53"
