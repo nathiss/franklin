@@ -95,6 +95,17 @@ franklin-cli --image "/temp/Mona_Lisa_322_480.png" -t 7 -m Rectangle -f SquareDi
 
 ---
 
+```sh
+franklin-cli --image "/temp/Mona_Lisa_322_480.png" -t 7 -m Circle -f SquareDistance -c LeftOrRight
+    --output-dir "/temp/images" --save-every 100
+```
+
+| Source image | Generated image (Generation #4000) |
+| :----------: | :-------------: |
+| ![Mona_Lisa_322_480.png](./asserts/Mona_Lisa_322_480.png) | ![example_5_4000.png](./asserts/example_5_4000.png) |
+
+---
+
 All examples above (without the source images) are licensed under **CC BY-SA 4.0**. For more details see
 [asserts/README.md](./asserts/README.md).
 
