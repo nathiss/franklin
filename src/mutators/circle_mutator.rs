@@ -19,8 +19,8 @@ impl CircleMutator {
         let image_width = image.width() as i64;
         let image_height = image.height() as i64;
 
-        let x = random.get_random(1, image_width) as i64;
-        let y = random.get_random(1, image_height) as i64;
+        let x = random.get_random(1, image_width);
+        let y = random.get_random(1, image_height);
 
         let n = *[x, y, image_width - x, image_height - y]
             .iter()

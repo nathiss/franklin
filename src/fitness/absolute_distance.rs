@@ -18,9 +18,9 @@ impl FitnessFunction for AbsoluteDistance {
             let diff_g = isize::from(p1.get_g()) - isize::from(p2.get_g());
             let diff_b = isize::from(p1.get_b()) - isize::from(p2.get_b());
 
-            sum += diff_r.abs() as usize;
-            sum += diff_g.abs() as usize;
-            sum += diff_b.abs() as usize;
+            sum += diff_r.unsigned_abs();
+            sum += diff_g.unsigned_abs();
+            sum += diff_b.unsigned_abs();
 
             sum
         };
@@ -37,7 +37,7 @@ impl FitnessFunction for AbsoluteDistance {
             let diff_red = isize::from(p1.get_r()) - isize::from(p2.get_r());
             let diff_grayscale = diff_red * 3;
 
-            sum += diff_grayscale.abs() as usize;
+            sum += diff_grayscale.unsigned_abs();
 
             sum
         };

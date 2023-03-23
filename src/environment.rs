@@ -100,13 +100,13 @@ impl Environment {
                         context.get_mutator().mutate_rgb(&mut entry.0);
                         entry.1 = context
                             .get_fitness()
-                            .calculate_fitness_rgb(&*context.get_image(), &entry.0);
+                            .calculate_fitness_rgb(context.get_image(), &entry.0);
                     }
                     ColorMode::Grayscale => {
                         context.get_mutator().mutate_grayscale(&mut entry.0);
                         entry.1 = context
                             .get_fitness()
-                            .calculate_fitness_grayscale(&*context.get_image(), &entry.0);
+                            .calculate_fitness_grayscale(context.get_image(), &entry.0);
                     }
                 }
 
