@@ -22,17 +22,9 @@ impl Image {
     #[must_use]
     pub fn blank(height: usize, width: usize, pixel: &Pixel) -> Self {
         let size = height * width;
-        let mut pixels = Vec::with_capacity(size as usize);
+        let pixels = vec![pixel.clone(); size];
 
-        for _ in 0..size {
-            pixels.push(pixel.clone());
-        }
-
-        Self {
-            height,
-            width,
-            pixels,
-        }
+        Self::new(height, width, pixels)
     }
 
     pub fn width(&self) -> usize {

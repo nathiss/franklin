@@ -32,15 +32,8 @@ fn get_first_generation(
     image_height: usize,
     image_width: usize,
 ) -> Vec<(Image, usize)> {
-    let mut vec = Vec::with_capacity(vec_len);
-
     let pixel = Pixel::white();
-
-    vec.resize_with(vec_len, || {
-        (Image::blank(image_height, image_width, &pixel), usize::MAX)
-    });
-
-    vec
+    vec![(Image::blank(image_height, image_width, &pixel), usize::MAX); vec_len]
 }
 
 pub struct Environment {
