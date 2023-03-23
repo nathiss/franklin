@@ -46,7 +46,7 @@ use franklin::{
         LeftOrRightCloneCrossover,
     },
     fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
-    mutators::{Mutator, RectangleMutator, TriangleMutator, CircleMutator},
+    mutators::{CircleMutator, Mutator, RectangleMutator, TriangleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
