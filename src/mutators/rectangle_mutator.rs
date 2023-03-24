@@ -18,8 +18,8 @@ impl RectangleMutator {
         let image_width = image.width();
         let image_height = image.height();
 
-        let x = random.get_random(0usize, image_width - 1);
-        let y = random.get_random(0usize, image_height - 1);
+        let x = random.get_random(0usize, image_width);
+        let y = random.get_random(0usize, image_height);
 
         let width = random.get_random(0usize, image_width - x) + 1;
         let height = random.get_random(0usize, image_height - y) + 1;
