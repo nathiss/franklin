@@ -22,7 +22,7 @@ include = [
 anyhow = "1.0.53"
 show-image = "0.13.1"
 rand = "0.8.4"
-clap = { version = "3.1.0", features = ["cargo"] }
+clap = { version = "3.2.25", features = ["cargo"] }
 rayon = "1.5.1"
 num-integer = "0.1.44"
 
