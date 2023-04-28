@@ -62,7 +62,7 @@ impl TriangleMutator {
         let mut xf = vertices[0].x as f64;
         let mut xt = vertices[0].x as f64 + dx_upper;
 
-        let mut y = vertices[0].y as isize;
+        let mut y = vertices[0].y;
         while y
             <= if vertices[2].y > image_height - 1 {
                 image_height - 1

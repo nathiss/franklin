@@ -299,9 +299,9 @@ impl Default for EnvironmentBuilder {
         Self {
             image: None,
             color_mode: ColorMode::Rgb,
-            mutator: Box::new(RectangleMutator::default()),
-            fitness: Box::new(SquareDistance::default()),
-            crossover: Box::new(EqualHalfsCrossover::default()),
+            mutator: Box::<RectangleMutator>::default(),
+            fitness: Box::<SquareDistance>::default(),
+            crossover: Box::<EqualHalfsCrossover>::default(),
             generation_size: 100,
             threads: 1,
             display_condition: DisplayCondition::None,

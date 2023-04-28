@@ -1,6 +1,6 @@
 use num_integer::Roots;
 
-use crate::{util::Random, models::Image};
+use crate::{models::Image, util::Random};
 
 use super::Mutator;
 
@@ -19,18 +19,17 @@ impl CircleMutator {
         let image_width = image.width() as i64;
         let image_height = image.height() as i64;
 
-        let x = random.get_random(1, image_width) as i64;
-        let y = random.get_random(1, image_height) as i64;
+        let x = random.get_random(1, image_width);
+        let y = random.get_random(1, image_height);
 
-        let n = *[x, y, image_width - x, image_height - y].iter().min().unwrap();
+        let n = *[x, y, image_width - x, image_height - y]
+            .iter()
+            .min()
+            .unwrap();
 
         let r = random.get_random(1, n + 1);
 
-        RandomCircle {
-            x,
-            y,
-            r,
-        }
+        RandomCircle { x, y, r }
     }
 }
 

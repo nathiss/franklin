@@ -46,7 +46,7 @@ use franklin::{
         LeftOrRightCloneCrossover,
     },
     fitness::{AbsoluteDistance, FitnessFunction, SquareDistance},
-    mutators::{Mutator, RectangleMutator, TriangleMutator, CircleMutator},
+    mutators::{CircleMutator, Mutator, RectangleMutator, TriangleMutator},
     ArgParser, ColorMode, DisplayCondition, EnvironmentBuilder, ImageReader, SaveCondition,
 };
 
@@ -62,9 +62,9 @@ fn get_color_mode_from_name(name: &str) -> Result<ColorMode> {
 #[doc(hidden)]
 fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + 'static>> {
     match name {
-        "Rectangle" => Ok(Box::new(RectangleMutator::default())),
-        "Triangle" => Ok(Box::new(TriangleMutator::default())),
-        "Circle" => Ok(Box::new(CircleMutator::default())),
+        "Rectangle" => Ok(Box::<RectangleMutator>::default()),
+        "Triangle" => Ok(Box::<TriangleMutator>::default()),
+        "Circle" => Ok(Box::<CircleMutator>::default()),
         _ => Err(Error::msg("Unknown mutator.")),
     }
 }
@@ -72,8 +72,8 @@ fn get_mutator_from_name(name: &str) -> Result<Box<dyn Mutator + Send + Sync + '
 #[doc(hidden)]
 fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + Sync + 'static>> {
     match name {
-        "SquareDistance" => Ok(Box::new(SquareDistance::default())),
-        "AbsoluteDistance" => Ok(Box::new(AbsoluteDistance::default())),
+        "SquareDistance" => Ok(Box::<SquareDistance>::default()),
+        "AbsoluteDistance" => Ok(Box::<AbsoluteDistance>::default()),
         _ => Err(Error::msg("Unknown fitness function.")),
     }
 }
@@ -81,9 +81,9 @@ fn get_fitness_from_name(name: &str) -> Result<Box<dyn FitnessFunction + Send + 
 #[doc(hidden)]
 fn get_crossover_from_name(name: &str) -> Result<Box<dyn CrossoverFunction + Send + 'static>> {
     match name {
-        "LeftOrRight" => Ok(Box::new(LeftOrRightCloneCrossover::default())),
-        "EqualHalfs" => Ok(Box::new(EqualHalfsCrossover::default())),
-        "ArithmeticAverage" => Ok(Box::new(ArithmeticAverageCrossover::default())),
+        "LeftOrRight" => Ok(Box::<LeftOrRightCloneCrossover>::default()),
+        "EqualHalfs" => Ok(Box::<EqualHalfsCrossover>::default()),
+        "ArithmeticAverage" => Ok(Box::<ArithmeticAverageCrossover>::default()),
         _ => Err(Error::msg("Unknown crossover function.")),
     }
 }
