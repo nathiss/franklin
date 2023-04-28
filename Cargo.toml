@@ -20,7 +20,7 @@ include = [
 
 [dependencies]
 anyhow = "1.0.53"
-show-image = "0.10.1"
+show-image = "0.13.1"
 rand = "0.8.4"
 clap = { version = "3.1.0", features = ["cargo"] }
 rayon = "1.5.1"
